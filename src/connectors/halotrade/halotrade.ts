@@ -31,6 +31,7 @@ import {
 } from '../../services/error-handler';
 import { DirectSecp256k1Wallet } from 'cosmjs-proto-signing-0.32';
 import { GasPrice } from 'cosmjs-stargate-0.32';
+import { TimeoutError } from '@cosmjs/stargate';
 // import e from 'express';
 // import { pow } from 'mathjs';
 
@@ -271,17 +272,28 @@ export class Halotrade {
       console.log(gasUsed);
       return { gasUsed };
     } else {
-      const result = await signingClient.signAndBroadcast(
-        req.address,
-        [executeContractMsg],
-        'auto',
-        memo
-      );
-      return {
-        txhash: result.transactionHash,
-        expectedPrice: 0,
-        expectedAmount: 0,
-      };
+      try {
+        const result = await signingClient.signAndBroadcast(
+          req.address,
+          [executeContractMsg],
+          'auto',
+          memo
+        );
+        return {
+          txhash: result.transactionHash,
+          expectedPrice: 0,
+          expectedAmount: 0,
+        };
+      } catch (error) {
+        console.error(error);
+        if (error instanceof TimeoutError) {
+          return {
+            txhash: error.txId,
+            expectedPrice: 0,
+            expectedAmount: 0,
+          };
+        } else throw error;
+      }
     }
   }
 
