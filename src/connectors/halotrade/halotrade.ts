@@ -31,7 +31,6 @@ import {
 } from '../../services/error-handler';
 import { DirectSecp256k1Wallet } from 'cosmjs-proto-signing-0.32';
 import { GasPrice } from 'cosmjs-stargate-0.32';
-import { TimeoutError } from '@cosmjs/stargate';
 // import e from 'express';
 // import { pow } from 'mathjs';
 
@@ -286,8 +285,12 @@ export class Halotrade {
         };
       } catch (error) {
         console.error(error);
-        if (error instanceof TimeoutError) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (error && error.txId) {
           return {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             txhash: error.txId,
             expectedPrice: 0,
             expectedAmount: 0,
