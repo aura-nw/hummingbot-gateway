@@ -25,7 +25,7 @@ import {
   AccountData,
   DirectSignResponse,
 } from 'cosmjs-proto-signing-0.32';
-const { toBase64, fromBase64 } = require('@cosmjs/encoding');
+const { toBase64, fromBase64, fromHex } = require('@cosmjs/encoding');
 const crypto = require('crypto').webcrypto;
 // export interface AuraToken {
 //   base: string;
@@ -186,7 +186,7 @@ export class AuraBase {
     prefix: string
   ): Promise<any> {
     const wallet = await DirectSecp256k1Wallet.fromKey(
-      fromBase64(privateKey),
+      fromHex(privateKey),
       prefix
     );
     // wallet.
