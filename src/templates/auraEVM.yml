@@ -1,0 +1,12 @@
+networks:
+  mainnet:
+    chainID: 6322
+    nodeURL: https://jsonrpc.aura.network
+    tokenListType: FILE
+    nativeCurrencySymbol: AURA
+    tokenListSource: /home/gateway/conf/lists/ethereum_coingecko_20230610.json
+    gasPriceRefreshInterval: 60
+
+# if you use the gas assumptions below, your wallet needs >0.1 ETH balance for gas
+gasLimitTransaction: 3000000
+manualGasPrice: 33

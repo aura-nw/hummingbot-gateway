@@ -123,3 +123,7 @@ configurations:
   $namespace aura:
     configurationPath: aura.yml
     schemaPath: aura-schema.json
+
+  $namespace auraEVM:
+    configurationPath: auraEVM.yml
+    schemaPath: auraEVM-schema.json

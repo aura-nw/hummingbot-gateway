@@ -111,6 +111,7 @@ import { BalanceRequest } from '../network/network.requests';
 import { TradeV2 } from '@traderjoe-xyz/sdk-v2';
 import { AuraToken } from '../chains/aura/aura-token';
 import { AuraBase } from '../chains/aura/aura-base';
+import { AuraEVMBase } from '../chains/auraEVM/auraEVM-base';
 
 // TODO Check the possibility to have clob/solana/serum equivalents here
 //  Check this link https://hummingbot.org/developers/gateway/building-gateway-connectors/#5-add-sdk-classes-to-uniswapish-interface
@@ -818,6 +819,15 @@ export interface Auraish extends AuraBase {
   gasPrice: number;
   nativeTokenSymbol: string;
   chain: string;
+}
+
+export interface AuraEVMish extends BasicChainMethods, AuraEVMBase {
+  controller: any;
+  cancelTx(wallet: Wallet, nonce: number): Promise<Transaction>;
+  getContract(
+    tokenAddress: string,
+    signerOrProvider?: Wallet | Provider
+  ): Contract;
 }
 
 export interface Tezosish extends TezosBase {
