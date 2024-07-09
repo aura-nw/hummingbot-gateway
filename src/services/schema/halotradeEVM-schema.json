@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "allowedSlippage": { "type": "string" },
+      "gasLimitEstimate": { "type": "integer" },
+      "ttl": { "type": "integer" },
+      "maximumHops": { "type": "integer" },
+      "useRouter": { "type": "boolean" },
+      "feeTier": {
+        "enum": ["LOWEST", "LOW", "MEDIUM", "HIGH"]
+      },
+      "contractAddresses": {
+        "type": "object",
+        "patternProperties": {
+          "^\\w+$": {
+            "type": "object",
+            "properties": {
+              "halotradeEVMV3SmartOrderRouterAddress": { "type": "string" },
+              "halotradeEVMV3NftManagerAddress": { "type": "string" },
+              "halotradeEVMV3QuoterV2ContractAddress": { "type": "string" }
+            },
+            "required": [
+              "halotradeEVMV3SmartOrderRouterAddress",
+              "halotradeEVMV3NftManagerAddress"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "additionalProperties": false,
+    "required": [
+      "allowedSlippage",
+      "gasLimitEstimate",
+      "ttl",
+      "maximumHops",
+      "contractAddresses"
+    ]
+  }

@@ -39,12 +39,12 @@ export namespace HalotradeEVMConfig {
     chainType: 'EVM',
     availableNetworks: [
       {
-        chain: 'ethereum',
+        chain: 'auraEVM',
         networks: Object.keys(
           ConfigManagerV2.getInstance().get('halotradeEVM.contractAddresses')
         ).filter((network) =>
           Object.keys(
-            ConfigManagerV2.getInstance().get('ethereum.networks')
+            ConfigManagerV2.getInstance().get('auraEVM.networks')
           ).includes(network)
         ),
       },

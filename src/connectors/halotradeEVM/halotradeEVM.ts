@@ -36,14 +36,14 @@ import {
 } from 'ethers';
 import { logger } from '../../services/logger';
 import { percentRegexp } from '../../services/config-manager-v2';
-import { Ethereum } from '../../chains/ethereum/ethereum';
+import { AuraEVM } from '../../chains/auraEVM/auraEVM';
 import { Polygon } from '../../chains/polygon/polygon';
 import { ExpectedTrade, Uniswapish } from '../../services/common-interfaces';
 import { getAddress } from 'ethers/lib/utils';
 
 export class Uniswap implements Uniswapish {
   private static _instances: { [name: string]: Uniswap };
-  private chain: Ethereum | Polygon;
+  private chain: AuraEVM | Polygon;
   private _alphaRouter: AlphaRouter;
   private _router: string;
   private _routerAbi: ContractInterface;
@@ -59,8 +59,8 @@ export class Uniswap implements Uniswapish {
 
   private constructor(chain: string, network: string) {
     const config = HalotradeEVMConfig.config;
-    if (chain === 'ethereum') {
-      this.chain = Ethereum.getInstance(network);
+    if (chain === 'auraEVM') {
+      this.chain = AuraEVM.getInstance(network);
     } else {
       this.chain = Polygon.getInstance(network);
     }

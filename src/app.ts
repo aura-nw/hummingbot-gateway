@@ -111,7 +111,6 @@ export const startSwagger = async () => {
 };
 
 export const startGateway = async () => {
-  logger.info(`Gateway Versionnnnnnnnnnnn`); // display gateway version
   const port = ConfigManagerV2.getInstance().get('server.port');
   const gateway_version = '1.20.0'; // gateway version
   if (!ConfigManagerV2.getInstance().get('server.id')) {

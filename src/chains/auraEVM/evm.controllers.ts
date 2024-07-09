@@ -24,7 +24,7 @@ import {
 } from './auraEVM.requests';
 import {
   CLOBish,
-  Chain as Ethereumish,
+  AuraEVMish,
   UniswapLPish,
   Uniswapish,
 } from '../../services/common-interfaces';
@@ -128,11 +128,11 @@ export class EVMController {
   // 2: in the mempool and likely to succeed
   // 3: in the mempool and likely to fail
   // 0: in the mempool but we dont have data to guess its status
-  static async poll(ethereumish: Ethereumish, req: PollRequest) {
+  static async poll(auraEVMish: AuraEVMish, req: PollRequest) {
     validatePollRequest(req);
 
-    const currentBlock = await ethereumish.getCurrentBlockNumber();
-    const txData = await ethereumish.getTransaction(req.txHash);
+    const currentBlock = await auraEVMish.getCurrentBlockNumber();
+    const txData = await auraEVMish.getTransaction(req.txHash);
     let txBlock, txReceipt, txStatus;
     if (!txData) {
       // tx not found, didn't reach the mempool or it never existed
@@ -140,16 +140,16 @@ export class EVMController {
       txReceipt = null;
       txStatus = -1;
     } else {
-      txReceipt = await ethereumish.getTransactionReceipt(req.txHash);
+      txReceipt = await auraEVMish.getTransactionReceipt(req.txHash);
       if (txReceipt === null) {
         // tx is in the mempool
         txBlock = -1;
         txReceipt = null;
         txStatus = 0;
 
-        const transactions = await ethereumish.txStorage.getTxs(
-          ethereumish.chain,
-          ethereumish.chainId
+        const transactions = await auraEVMish.txStorage.getTxs(
+          auraEVMish.chain,
+          auraEVMish.chainId
         );
 
         if (transactions[txData.hash]) {
@@ -157,7 +157,7 @@ export class EVMController {
           const now = new Date();
           const txDuration = Math.abs(now.getTime() - data[0].getTime());
           if (
-            willTxSucceed(txDuration, 60000 * 3, data[1], ethereumish.gasPrice)
+            willTxSucceed(txDuration, 60000 * 3, data[1], auraEVMish.gasPrice)
           ) {
             txStatus = 2;
           } else {
@@ -188,7 +188,7 @@ export class EVMController {
     }
 
     logger.info(
-      `Poll ${ethereumish.chain}, txHash ${req.txHash}, status ${txStatus}.`
+      `Poll ${auraEVMish.chain}, txHash ${req.txHash}, status ${txStatus}.`
     );
     return {
       currentBlock,
@@ -201,45 +201,45 @@ export class EVMController {
   }
 
   static async nonce(
-    ethereum: Ethereumish,
+    auraEVM: AuraEVMish,
     req: NonceRequest
   ): Promise<NonceResponse> {
     validateNonceRequest(req);
     // get the address via the public key since we generally use the public
     // key to interact with gateway and the address is not part of the user config
-    const wallet = await ethereum.getWallet(req.address);
-    const nonce = await ethereum.nonceManager.getNonce(wallet.address);
+    const wallet = await auraEVM.getWallet(req.address);
+    const nonce = await auraEVM.nonceManager.getNonce(wallet.address);
     return { nonce };
   }
 
   static async nextNonce(
-    ethereum: Ethereumish,
+    auraEVM: AuraEVMish,
     req: NonceRequest
   ): Promise<NonceResponse> {
     validateNonceRequest(req);
     // get the address via the public key since we generally use the public
     // key to interact with gateway and the address is not part of the user config
-    const wallet = await ethereum.getWallet(req.address);
-    const nonce = await ethereum.nonceManager.getNextNonce(wallet.address);
+    const wallet = await auraEVM.getWallet(req.address);
+    const nonce = await auraEVM.nonceManager.getNextNonce(wallet.address);
     return { nonce };
   }
 
   static getTokenSymbolsToTokens = (
-    ethereum: Ethereumish,
+    auraEVM: AuraEVMish,
     tokenSymbols: Array<string>
   ): Record<string, TokenInfo> => {
     const tokens: Record<string, TokenInfo> = {};
 
     for (let i = 0; i < tokenSymbols.length; i++) {
       const symbol = tokenSymbols[i];
-      const token = ethereum.getTokenBySymbol(symbol);
+      const token = auraEVM.getTokenBySymbol(symbol);
       if (token) tokens[symbol] = token;
     }
 
     return tokens;
   };
 
-  static async getTokens(connection: Ethereumish, req: TokensRequest) {
+  static async getTokens(connection: AuraEVMish, req: TokensRequest) {
     validateTokensRequest(req);
     let tokens: TokenInfo[] = [];
     if (!req.tokenSymbols) {
@@ -253,32 +253,32 @@ export class EVMController {
     return { tokens };
   }
 
-  static async allowances(ethereumish: Ethereumish, req: AllowancesRequest) {
+  static async allowances(auraEVMish: AuraEVMish, req: AllowancesRequest) {
     validateAllowancesRequest(req);
-    return EVMController.allowancesWithoutValidation(ethereumish, req);
+    return EVMController.allowancesWithoutValidation(auraEVMish, req);
   }
 
   static async allowancesWithoutValidation(
-    ethereumish: Ethereumish,
+    auraEVMish: AuraEVMish,
     req: AllowancesRequest
   ) {
-    const wallet = await ethereumish.getWallet(req.address);
+    const wallet = await auraEVMish.getWallet(req.address);
     const tokens = EVMController.getTokenSymbolsToTokens(
-      ethereumish,
+      auraEVMish,
       req.tokenSymbols
     );
-    const spender = ethereumish.getSpender(req.spender);
+    const spender = auraEVMish.getSpender(req.spender);
 
     const approvals: Record<string, string> = {};
     await Promise.all(
       Object.keys(tokens).map(async (symbol) => {
         // instantiate a contract and pass in provider for read-only access
-        const contract = ethereumish.getContract(
+        const contract = auraEVMish.getContract(
           tokens[symbol].address,
-          ethereumish.provider
+          auraEVMish.provider
         );
         approvals[symbol] = tokenValueToString(
-          await ethereumish.getERC20Allowance(
+          await auraEVMish.getERC20Allowance(
             contract,
             wallet,
             spender,
@@ -294,7 +294,7 @@ export class EVMController {
     };
   }
 
-  static async balances(ethereumish: Ethereumish, req: BalanceRequest) {
+  static async balances(auraEVMish: AuraEVMish, req: BalanceRequest) {
     validateBalanceRequest(req);
 
     let wallet: Wallet;
@@ -306,7 +306,7 @@ export class EVMController {
 
     if (!connector?.balances) {
       try {
-        wallet = await ethereumish.getWallet(req.address);
+        wallet = await auraEVMish.getWallet(req.address);
       } catch (err) {
         throw new HttpException(
           500,
@@ -316,12 +316,12 @@ export class EVMController {
       }
 
       const tokens = EVMController.getTokenSymbolsToTokens(
-        ethereumish,
+        auraEVMish,
         req.tokenSymbols
       );
-      if (req.tokenSymbols.includes(ethereumish.nativeTokenSymbol)) {
-        balances[ethereumish.nativeTokenSymbol] = tokenValueToString(
-          await ethereumish.getNativeBalance(wallet)
+      if (req.tokenSymbols.includes(auraEVMish.nativeTokenSymbol)) {
+        balances[auraEVMish.nativeTokenSymbol] = tokenValueToString(
+          await auraEVMish.getNativeBalance(wallet)
         );
       }
       await Promise.all(
@@ -330,11 +330,11 @@ export class EVMController {
             const address = tokens[symbol].address;
             const decimals = tokens[symbol].decimals;
             // instantiate a contract and pass in provider for read-only access
-            const contract = ethereumish.getContract(
+            const contract = auraEVMish.getContract(
               address,
-              ethereumish.provider
+              auraEVMish.provider
             );
-            const balance = await ethereumish.getERC20Balance(
+            const balance = await auraEVMish.getERC20Balance(
               contract,
               wallet,
               decimals
@@ -361,13 +361,13 @@ export class EVMController {
     };
   }
 
-  static async approve(ethereumish: Ethereumish, req: ApproveRequest) {
+  static async approve(auraEVMish: AuraEVMish, req: ApproveRequest) {
     validateApproveRequest(req);
-    return await EVMController.approveWithoutValidation(ethereumish, req);
+    return await EVMController.approveWithoutValidation(auraEVMish, req);
   }
 
   static async approveWithoutValidation(
-    ethereumish: Ethereumish,
+    auraEVMish: AuraEVMish,
     req: ApproveRequest
   ) {
     const {
@@ -379,10 +379,10 @@ export class EVMController {
       maxPriorityFeePerGas,
     } = req;
 
-    const spender = ethereumish.getSpender(req.spender);
+    const spender = auraEVMish.getSpender(req.spender);
     let wallet: Wallet;
     try {
-      wallet = await ethereumish.getWallet(address);
+      wallet = await auraEVMish.getWallet(address);
     } catch (err) {
       throw new HttpException(
         500,
@@ -390,7 +390,7 @@ export class EVMController {
         LOAD_WALLET_ERROR_CODE
       );
     }
-    const fullToken = ethereumish.getTokenBySymbol(token);
+    const fullToken = auraEVMish.getTokenBySymbol(token);
     if (!fullToken) {
       throw new HttpException(
         500,
@@ -411,11 +411,11 @@ export class EVMController {
       maxPriorityFeePerGasBigNumber = BigNumber.from(maxPriorityFeePerGas);
     }
     // instantiate a contract and pass in wallet, which act on behalf of that signer
-    const contract = ethereumish.getContract(fullToken.address, wallet);
+    const contract = auraEVMish.getContract(fullToken.address, wallet);
 
     // convert strings to BigNumber
     // call approve function
-    const approval = await ethereumish.approveERC20(
+    const approval = await auraEVMish.approveERC20(
       contract,
       wallet,
       spender,
@@ -423,16 +423,16 @@ export class EVMController {
       nonce,
       maxFeePerGasBigNumber,
       maxPriorityFeePerGasBigNumber,
-      ethereumish.gasPrice
+      auraEVMish.gasPrice
     );
 
     if (approval.hash) {
-      await ethereumish.txStorage.saveTx(
-        ethereumish.chain,
-        ethereumish.chainId,
+      await auraEVMish.txStorage.saveTx(
+        auraEVMish.chain,
+        auraEVMish.chainId,
         approval.hash,
         new Date(),
-        ethereumish.gasPrice
+        auraEVMish.gasPrice
       );
     }
 
@@ -445,11 +445,11 @@ export class EVMController {
     };
   }
 
-  static async cancel(ethereumish: Ethereumish, req: CancelRequest) {
+  static async cancel(auraEVMish: AuraEVMish, req: CancelRequest) {
     validateCancelRequest(req);
     let wallet: Wallet;
     try {
-      wallet = await ethereumish.getWallet(req.address);
+      wallet = await auraEVMish.getWallet(req.address);
     } catch (err) {
       throw new HttpException(
         500,
@@ -459,7 +459,7 @@ export class EVMController {
     }
 
     // call cancelTx function
-    const cancelTx = await ethereumish.cancelTx(wallet, req.nonce);
+    const cancelTx = await auraEVMish.cancelTx(wallet, req.nonce);
 
     logger.info(
       `Cancelled transaction at nonce ${req.nonce}, cancel txHash ${cancelTx.hash}.`

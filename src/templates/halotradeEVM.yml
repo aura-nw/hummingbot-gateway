@@ -28,11 +28,3 @@ contractAddresses:
     halotradeEVMV3SmartOrderRouterAddress: '0x7B260583139dCA51DE0430Fd4CAf6D4627bF3911'
     halotradeEVMV3NftManagerAddress: '0x809AE1da5388e762A7DB05D9E0D7Ae9462bD8f26'
     halotradeEVMV3QuoterV2ContractAddress: '0x3e4aFdAd24929e4e0Eb2379FC1AF97b1D0AdDae8'
-  euphoria:
-    halotradeEVMV3SmartOrderRouterAddress: '0x7B260583139dCA51DE0430Fd4CAf6D4627bF3911'
-    halotradeEVMV3NftManagerAddress: '0x809AE1da5388e762A7DB05D9E0D7Ae9462bD8f26'
-    halotradeEVMV3QuoterV2ContractAddress: '0x3e4aFdAd24929e4e0Eb2379FC1AF97b1D0AdDae8'
-  serenity:
-    halotradeEVMV3SmartOrderRouterAddress: '0x7B260583139dCA51DE0430Fd4CAf6D4627bF3911'
-    halotradeEVMV3NftManagerAddress: '0x809AE1da5388e762A7DB05D9E0D7Ae9462bD8f26'
-    halotradeEVMV3QuoterV2ContractAddress: '0x3e4aFdAd24929e4e0Eb2379FC1AF97b1D0AdDae8'

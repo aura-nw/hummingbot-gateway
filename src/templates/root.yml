@@ -124,6 +124,10 @@ configurations:
     configurationPath: aura.yml
     schemaPath: aura-schema.json
 
+  $namespace halotradeEVM:
+    configurationPath: halotradeEVM.yml
+    schemaPath: halotradeEVM-schema.json
+
   $namespace auraEVM:
     configurationPath: auraEVM.yml
     schemaPath: auraEVM-schema.json

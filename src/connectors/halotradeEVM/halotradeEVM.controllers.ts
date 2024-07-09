@@ -19,10 +19,10 @@ import {
   UNKNOWN_ERROR_ERROR_CODE,
   UNKNOWN_ERROR_MESSAGE,
 } from '../../services/error-handler';
-import { TokenInfo } from '../../chains/ethereum/ethereum-base';
+import { TokenInfo } from '../../chains/auraEVM/auraEVM-base';
 import { latency, gasCostInEthString } from '../../services/base';
 import {
-  Ethereumish,
+  AuraEVMish,
   ExpectedTrade,
   Uniswapish,
   UniswapLPish,
@@ -55,7 +55,7 @@ export interface TradeInfo {
 }
 
 export async function txWriteData(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   address: string,
   maxFeePerGas?: string,
   maxPriorityFeePerGas?: string
@@ -75,7 +75,7 @@ export async function txWriteData(
 
   let wallet: Wallet;
   try {
-    wallet = await ethereumish.getWallet(address);
+    wallet = await auraEVMish.getWallet(address);
   } catch (err) {
     logger.error(`Wallet ${address} not available.`);
     throw new HttpException(
@@ -88,7 +88,7 @@ export async function txWriteData(
 }
 
 export async function getTradeInfo(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: Uniswapish,
   baseAsset: string,
   quoteAsset: string,
@@ -97,12 +97,12 @@ export async function getTradeInfo(
   allowedSlippage?: string
 ): Promise<TradeInfo> {
   const baseToken: Tokenish = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     baseAsset
   );
   const quoteToken: Tokenish = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     quoteAsset
   );
@@ -136,7 +136,7 @@ export async function getTradeInfo(
 }
 
 export async function price(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: Uniswapish,
   req: PriceRequest
 ): Promise<PriceResponse> {
@@ -144,7 +144,7 @@ export async function price(
   let tradeInfo: TradeInfo;
   try {
     tradeInfo = await getTradeInfo(
-      ethereumish,
+      auraEVMish,
       uniswapish,
       req.base,
       req.quote,
@@ -174,11 +174,11 @@ export async function price(
   const tradePrice =
     req.side === 'BUY' ? trade.executionPrice.invert() : trade.executionPrice;
 
-  const gasLimitTransaction = ethereumish.gasLimitTransaction;
-  const gasPrice = ethereumish.gasPrice;
+  const gasLimitTransaction = auraEVMish.gasLimitTransaction;
+  const gasPrice = auraEVMish.gasPrice;
   const gasLimitEstimate = uniswapish.gasLimitEstimate;
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     base: tradeInfo.baseToken.address,
@@ -188,14 +188,14 @@ export async function price(
     expectedAmount: expectedAmount.toSignificant(8),
     price: tradePrice.toSignificant(8),
     gasPrice: gasPrice,
-    gasPriceToken: ethereumish.nativeTokenSymbol,
+    gasPriceToken: auraEVMish.nativeTokenSymbol,
     gasLimit: gasLimitTransaction,
     gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
   };
 }
 
 export async function trade(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: Uniswapish,
   req: TradeRequest
 ): Promise<TradeResponse> {
@@ -204,7 +204,7 @@ export async function trade(
   const limitPrice = req.limitPrice;
   const { wallet, maxFeePerGasBigNumber, maxPriorityFeePerGasBigNumber } =
     await txWriteData(
-      ethereumish,
+      auraEVMish,
       req.address,
       req.maxFeePerGas,
       req.maxPriorityFeePerGas
@@ -213,7 +213,7 @@ export async function trade(
   let tradeInfo: TradeInfo;
   try {
     tradeInfo = await getTradeInfo(
-      ethereumish,
+      auraEVMish,
       uniswapish,
       req.base,
       req.quote,
@@ -238,8 +238,8 @@ export async function trade(
     }
   }
 
-  const gasPrice: number = ethereumish.gasPrice;
-  const gasLimitTransaction: number = ethereumish.gasLimitTransaction;
+  const gasPrice: number = auraEVMish.gasPrice;
+  const gasLimitTransaction: number = auraEVMish.gasLimitTransaction;
   const gasLimitEstimate: number = uniswapish.gasLimitEstimate;
 
   if (req.side === 'BUY') {
@@ -275,12 +275,12 @@ export async function trade(
     );
 
     if (tx.hash) {
-      await ethereumish.txStorage.saveTx(
-        ethereumish.chain,
-        ethereumish.chainId,
+      await auraEVMish.txStorage.saveTx(
+        auraEVMish.chain,
+        auraEVMish.chainId,
         tx.hash,
         new Date(),
-        ethereumish.gasPrice
+        auraEVMish.gasPrice
       );
     }
 
@@ -289,7 +289,7 @@ export async function trade(
     );
 
     return {
-      network: ethereumish.chain,
+      network: auraEVMish.chain,
       timestamp: startTimestamp,
       latency: latency(startTimestamp, Date.now()),
       base: tradeInfo.baseToken.address,
@@ -299,7 +299,7 @@ export async function trade(
       expectedIn: tradeInfo.expectedTrade.expectedAmount.toSignificant(8),
       price: price.toSignificant(8),
       gasPrice: gasPrice,
-      gasPriceToken: ethereumish.nativeTokenSymbol,
+      gasPriceToken: auraEVMish.nativeTokenSymbol,
       gasLimit: gasLimitTransaction,
       gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
       nonce: tx.nonce,
@@ -344,7 +344,7 @@ export async function trade(
     );
 
     return {
-      network: ethereumish.chain,
+      network: auraEVMish.chain,
       timestamp: startTimestamp,
       latency: latency(startTimestamp, Date.now()),
       base: tradeInfo.baseToken.address,
@@ -354,7 +354,7 @@ export async function trade(
       expectedOut: tradeInfo.expectedTrade.expectedAmount.toSignificant(8),
       price: price.toSignificant(8),
       gasPrice: gasPrice,
-      gasPriceToken: ethereumish.nativeTokenSymbol,
+      gasPriceToken: auraEVMish.nativeTokenSymbol,
       gasLimit: gasLimitTransaction,
       gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
       nonce: tx.nonce,
@@ -364,7 +364,7 @@ export async function trade(
 }
 
 export async function addLiquidity(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: UniswapLPish,
   req: AddLiquidityRequest
 ): Promise<AddLiquidityResponse> {
@@ -372,7 +372,7 @@ export async function addLiquidity(
 
   const { wallet, maxFeePerGasBigNumber, maxPriorityFeePerGasBigNumber } =
     await txWriteData(
-      ethereumish,
+      auraEVMish,
       req.address,
       req.maxFeePerGas,
       req.maxPriorityFeePerGas
@@ -381,19 +381,19 @@ export async function addLiquidity(
   const fee = FeeAmount[req.fee.toUpperCase() as keyof typeof FeeAmount];
 
   const token0: Token = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     req.token0
   ) as Token;
 
   const token1: Token = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     req.token1
   ) as Token;
 
-  const gasPrice: number = ethereumish.gasPrice;
-  const gasLimitTransaction: number = ethereumish.gasLimitTransaction;
+  const gasPrice: number = auraEVMish.gasPrice;
+  const gasLimitTransaction: number = auraEVMish.gasLimitTransaction;
   const gasLimitEstimate: number = uniswapish.gasLimitEstimate;
 
   const tx = await uniswapish.addPosition(
@@ -418,7 +418,7 @@ export async function addLiquidity(
   );
 
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     token0: token0.address,
@@ -426,7 +426,7 @@ export async function addLiquidity(
     fee: req.fee,
     tokenId: req.tokenId ? req.tokenId : 0,
     gasPrice: gasPrice,
-    gasPriceToken: ethereumish.nativeTokenSymbol,
+    gasPriceToken: auraEVMish.nativeTokenSymbol,
     gasLimit: gasLimitTransaction,
     gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
     nonce: tx.nonce,
@@ -435,7 +435,7 @@ export async function addLiquidity(
 }
 
 export async function removeLiquidity(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: UniswapLPish,
   req: RemoveLiquidityRequest
 ): Promise<RemoveLiquidityResponse> {
@@ -443,14 +443,14 @@ export async function removeLiquidity(
 
   const { wallet, maxFeePerGasBigNumber, maxPriorityFeePerGasBigNumber } =
     await txWriteData(
-      ethereumish,
+      auraEVMish,
       req.address,
       req.maxFeePerGas,
       req.maxPriorityFeePerGas
     );
 
-  const gasPrice: number = ethereumish.gasPrice;
-  const gasLimitTransaction: number = ethereumish.gasLimitTransaction;
+  const gasPrice: number = auraEVMish.gasPrice;
+  const gasLimitTransaction: number = auraEVMish.gasLimitTransaction;
   const gasLimitEstimate: number = uniswapish.gasLimitEstimate;
 
   const tx = await uniswapish.reducePosition(
@@ -469,12 +469,12 @@ export async function removeLiquidity(
   );
 
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     tokenId: req.tokenId,
     gasPrice: gasPrice,
-    gasPriceToken: ethereumish.nativeTokenSymbol,
+    gasPriceToken: auraEVMish.nativeTokenSymbol,
     gasLimit: gasLimitTransaction,
     gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
     nonce: tx.nonce,
@@ -483,7 +483,7 @@ export async function removeLiquidity(
 }
 
 export async function collectEarnedFees(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: UniswapLPish,
   req: CollectEarnedFeesRequest
 ): Promise<RemoveLiquidityResponse> {
@@ -491,14 +491,14 @@ export async function collectEarnedFees(
 
   const { wallet, maxFeePerGasBigNumber, maxPriorityFeePerGasBigNumber } =
     await txWriteData(
-      ethereumish,
+      auraEVMish,
       req.address,
       req.maxFeePerGas,
       req.maxPriorityFeePerGas
     );
 
-  const gasPrice: number = ethereumish.gasPrice;
-  const gasLimitTransaction: number = ethereumish.gasLimitTransaction;
+  const gasPrice: number = auraEVMish.gasPrice;
+  const gasLimitTransaction: number = auraEVMish.gasLimitTransaction;
   const gasLimitEstimate: number = uniswapish.gasLimitEstimate;
 
   const tx: Transaction = <Transaction>(
@@ -518,12 +518,12 @@ export async function collectEarnedFees(
   );
 
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     tokenId: req.tokenId,
     gasPrice: gasPrice,
-    gasPriceToken: ethereumish.nativeTokenSymbol,
+    gasPriceToken: auraEVMish.nativeTokenSymbol,
     gasLimit: gasLimitTransaction,
     gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
     nonce: tx.nonce,
@@ -532,7 +532,7 @@ export async function collectEarnedFees(
 }
 
 export async function positionInfo(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: UniswapLPish,
   req: PositionRequest
 ): Promise<PositionResponse> {
@@ -543,7 +543,7 @@ export async function positionInfo(
   logger.info(`Position info for position ${req.tokenId} retrieved.`);
 
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     ...posInfo,
@@ -551,20 +551,20 @@ export async function positionInfo(
 }
 
 export async function poolPrice(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: UniswapLPish,
   req: PoolPriceRequest
 ): Promise<PoolPriceResponse> {
   const startTimestamp: number = Date.now();
 
   const token0: Token = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     req.token0
   ) as Token;
 
   const token1: Token = getFullTokenFromSymbol(
-    ethereumish,
+    auraEVMish,
     uniswapish,
     req.token1
   ) as Token;
@@ -580,7 +580,7 @@ export async function poolPrice(
   );
 
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: startTimestamp,
     latency: latency(startTimestamp, Date.now()),
     token0: token0.address,
@@ -593,12 +593,12 @@ export async function poolPrice(
 }
 
 export function getFullTokenFromSymbol(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: Uniswapish | UniswapLPish,
   tokenSymbol: string
 ): Tokenish | Token {
   const tokenInfo: TokenInfo | undefined =
-    ethereumish.getTokenBySymbol(tokenSymbol);
+    auraEVMish.getTokenBySymbol(tokenSymbol);
   let fullToken: Tokenish | Token | undefined;
   if (tokenInfo) {
     fullToken = uniswapish.getTokenByAddress(tokenInfo.address);
@@ -613,17 +613,17 @@ export function getFullTokenFromSymbol(
 }
 
 export async function estimateGas(
-  ethereumish: Ethereumish,
+  auraEVMish: AuraEVMish,
   uniswapish: Uniswapish
 ): Promise<EstimateGasResponse> {
-  const gasPrice: number = ethereumish.gasPrice;
-  const gasLimitTransaction: number = ethereumish.gasLimitTransaction;
+  const gasPrice: number = auraEVMish.gasPrice;
+  const gasLimitTransaction: number = auraEVMish.gasLimitTransaction;
   const gasLimitEstimate: number = uniswapish.gasLimitEstimate;
   return {
-    network: ethereumish.chain,
+    network: auraEVMish.chain,
     timestamp: Date.now(),
     gasPrice,
-    gasPriceToken: ethereumish.nativeTokenSymbol,
+    gasPriceToken: auraEVMish.nativeTokenSymbol,
     gasLimit: gasLimitTransaction,
     gasCost: gasCostInEthString(gasPrice, gasLimitEstimate),
   };

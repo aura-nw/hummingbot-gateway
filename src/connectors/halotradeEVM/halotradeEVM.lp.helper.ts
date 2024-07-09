@@ -10,7 +10,7 @@ import * as uniV3 from '@uniswap/v3-sdk';
 import { AlphaRouter } from '@uniswap/smart-order-router';
 import { providers, Wallet, Signer, utils } from 'ethers';
 import { percentRegexp } from '../../services/config-manager-v2';
-import { Ethereum } from '../../chains/ethereum/ethereum';
+import { AuraEVM } from '../../chains/auraEVM/auraEVM';
 import {
   PoolState,
   RawPosition,
@@ -21,7 +21,7 @@ import * as math from 'mathjs';
 import { getAddress } from 'ethers/lib/utils';
 
 export class UniswapLPHelper {
-  protected ethereum: Ethereum;
+  protected auraEVM: AuraEVM;
   protected chainId;
   private _router: string;
   private _nftManager: string;
@@ -36,12 +36,12 @@ export class UniswapLPHelper {
   public abiDecoder: any;
 
   constructor(chain: string, network: string) {
-    this.ethereum = Ethereum.getInstance(network);
+    this.auraEVM = AuraEVM.getInstance(network);
     this._chain = chain;
-    this.chainId = this.ethereum.chainId;
+    this.chainId = this.auraEVM.chainId;
     this._alphaRouter = new AlphaRouter({
       chainId: this.chainId,
-      provider: this.ethereum.provider,
+      provider: this.auraEVM.provider,
     });
     this._router =
       HalotradeEVMConfig.config.halotradeEVMV3SmartOrderRouterAddress(network);
@@ -102,12 +102,12 @@ export class UniswapLPHelper {
   }
 
   public async init() {
-    if (this._chain == 'ethereum' && !this.ethereum.ready())
+    if (this._chain == 'auraEVM' && !this.auraEVM.ready())
       throw new InitializationError(
-        SERVICE_UNITIALIZED_ERROR_MESSAGE('ETH'),
+        SERVICE_UNITIALIZED_ERROR_MESSAGE('AURA'),
         SERVICE_UNITIALIZED_ERROR_CODE
       );
-    for (const token of this.ethereum.storedTokenList) {
+    for (const token of this.auraEVM.storedTokenList) {
       this.tokenList[token.address] = new Token(
         this.chainId,
         token.address,
@@ -157,7 +157,7 @@ export class UniswapLPHelper {
   ): Promise<PoolState> {
     const poolContract = this.getPoolContract(
       poolAddress,
-      this.ethereum.provider
+      this.auraEVM.provider
     );
     const minTick = uniV3.nearestUsableTick(
       uniV3.TickMath.MIN_TICK,
@@ -223,7 +223,7 @@ export class UniswapLPHelper {
     const poolContract = new Contract(
       uniV3.Pool.getAddress(token0, token1, tier),
       this.poolAbi,
-      this.ethereum.provider
+      this.auraEVM.provider
     );
     for (
       let x = Math.ceil(period / interval) * interval;
