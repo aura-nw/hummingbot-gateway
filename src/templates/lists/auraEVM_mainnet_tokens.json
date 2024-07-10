@@ -7,7 +7,7 @@
     "timestamp":"2023-06-10T11:05:40.919+00:00",
     "tokens":[
        {
-          "chainId":1,
+          "chainId":6233,
           "address":"0xDE47A655a5d9904BD3F7e1A536D8323fBD99993A",
           "name":"Wrapped Aura",
           "symbol":"WAURA",
@@ -15,7 +15,7 @@
           "logoURI":"https://s3.halotrade.zone/tokenImages/aura.png"
        },
        {
-          "chainId":1,
+          "chainId":6233,
           "address":"0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd",
           "name":"Tether USD",
           "symbol":"USDT",

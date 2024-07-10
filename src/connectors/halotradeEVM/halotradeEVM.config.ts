@@ -48,16 +48,6 @@ export namespace HalotradeEVMConfig {
           ).includes(network)
         ),
       },
-      {
-        chain: 'polygon',
-        networks: Object.keys(
-          ConfigManagerV2.getInstance().get('halotradeEVM.contractAddresses')
-        ).filter((network) =>
-          Object.keys(
-            ConfigManagerV2.getInstance().get('polygon.networks')
-          ).includes(network)
-        ),
-      },
     ],
     useRouter: ConfigManagerV2.getInstance().get(`halotradeEVM.useRouter`),
     feeTier: ConfigManagerV2.getInstance().get(`halotradeEVM.feeTier`),

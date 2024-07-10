@@ -183,6 +183,15 @@ export namespace ConnectorsRoutes {
             chain_type: HalotradeEVMConfig.config.chainType,
             available_networks: HalotradeEVMConfig.config.availableNetworks,
           },
+          {
+            name: 'halotradeEVMLP',
+            trading_type: HalotradeEVMConfig.config.tradingTypes('LP'),
+            chain_type: HalotradeEVMConfig.config.chainType,
+            available_networks: JSON.parse(
+              JSON.stringify(HalotradeEVMConfig.config.availableNetworks)
+            ),
+            additional_spenders: ['halotradeEVM'],
+          },
         ],
       });
     })

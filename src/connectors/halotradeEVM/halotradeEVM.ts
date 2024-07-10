@@ -37,13 +37,17 @@ import {
 import { logger } from '../../services/logger';
 import { percentRegexp } from '../../services/config-manager-v2';
 import { AuraEVM } from '../../chains/auraEVM/auraEVM';
-import { Polygon } from '../../chains/polygon/polygon';
-import { ExpectedTrade, Halotradeish } from '../../services/common-interfaces';
+// import { Polygon } from '../../chains/polygon/polygon';
+import {
+  ExpectedTrade,
+  HalotradeEVMish,
+} from '../../services/common-interfaces';
 import { getAddress } from 'ethers/lib/utils';
 
-export class HalotradeEVM implements Halotradeish {
+export class HalotradeEVM implements HalotradeEVMish {
   private static _instances: { [name: string]: HalotradeEVM };
-  private chain: AuraEVM | Polygon;
+  private chain: AuraEVM;
+  // | Polygon;
   private _alphaRouter: AlphaRouter;
   private _router: string;
   private _routerAbi: ContractInterface;
@@ -57,13 +61,14 @@ export class HalotradeEVM implements Halotradeish {
   private readonly _feeTier: FeeAmount;
   private readonly _quoterContractAddress: string;
 
-  private constructor(chain: string, network: string) {
+  private constructor(_chain: string, network: string) {
     const config = HalotradeEVMConfig.config;
-    if (chain === 'auraEVM') {
-      this.chain = AuraEVM.getInstance(network);
-    } else {
-      this.chain = Polygon.getInstance(network);
-    }
+    // if (chain === 'auraEVM') {
+    this.chain = AuraEVM.getInstance(network);
+    // }
+    // else {
+    //   this.chain = Polygon.getInstance(network);
+    // }
     this.chainId = this.chain.chainId;
     this._ttl = HalotradeEVMConfig.config.ttl;
     this._maximumHops = HalotradeEVMConfig.config.maximumHops;
