@@ -26,7 +26,7 @@ import {
   CLOBish,
   AuraEVMish,
   UniswapLPish,
-  Uniswapish,
+  Halotradeish,
 } from '../../services/common-interfaces';
 import {
   NonceRequest,
@@ -172,8 +172,8 @@ export class EVMController {
         // decode logs
         if (req.connector) {
           try {
-            const connector: Uniswapish | UniswapLPish | CLOBish =
-              await getConnector<Uniswapish | UniswapLPish | CLOBish>(
+            const connector: Halotradeish | UniswapLPish | CLOBish =
+              await getConnector<Halotradeish | UniswapLPish | CLOBish>(
                 req.chain,
                 req.network,
                 req.connector

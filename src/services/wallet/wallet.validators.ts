@@ -109,6 +109,11 @@ export const validatePrivateKey: Validator = mkSelectingValidator(
       invalidCosmosPrivateKeyError,
       (val) => typeof val === 'string' && isCosmosPrivateKey(val)
     ),
+    auraEVM: mkValidator(
+      'privateKey',
+      invalidEthPrivateKeyError,
+      (val) => typeof val === 'string' && isEthPrivateKey(val)
+    ),
     polygon: mkValidator(
       'privateKey',
       invalidEthPrivateKeyError,
@@ -143,7 +148,7 @@ export const validatePrivateKey: Validator = mkSelectingValidator(
 );
 
 export const invalidChainError: string =
-  'chain must be "ethereum", "avalanche", "near", "harmony", "cosmos", "aura", "binance-smart-chain", "injective", or "kujira"';
+  'chain must be "ethereum", "avalanche", "near", "harmony", "cosmos", "aura", "auraEVM", "binance-smart-chain", "injective", or "kujira"';
 
 export const invalidNetworkError: string =
   'expected a string for the network key';
@@ -173,7 +178,8 @@ export const validateChain: Validator = mkValidator(
       val === 'injective' ||
       val === 'tezos' ||
       val === 'kujira' ||
-      val === 'aura')
+      val === 'aura' ||
+      val === 'auraEVM')
 );
 
 export const validateNetwork: Validator = mkValidator(

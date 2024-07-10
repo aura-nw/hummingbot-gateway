@@ -6,7 +6,7 @@
 // import {
 // ExpectedTrade,
 // ExpectedTrade,
-// Halotradish,
+// Halotradeish,
 // RefAMMish,
 // Tokenish,
 // UniswapishTrade,

@@ -399,7 +399,7 @@ export interface RefAMMish {
   ): Promise<FinalExecutionOutcome>;
 }
 
-export interface Halotradish {
+export interface Halotradeish {
   /**
    * Router address.
    */

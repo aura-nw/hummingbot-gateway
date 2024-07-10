@@ -38,11 +38,11 @@ import { logger } from '../../services/logger';
 import { percentRegexp } from '../../services/config-manager-v2';
 import { AuraEVM } from '../../chains/auraEVM/auraEVM';
 import { Polygon } from '../../chains/polygon/polygon';
-import { ExpectedTrade, Uniswapish } from '../../services/common-interfaces';
+import { ExpectedTrade, Halotradeish } from '../../services/common-interfaces';
 import { getAddress } from 'ethers/lib/utils';
 
-export class Uniswap implements Uniswapish {
-  private static _instances: { [name: string]: Uniswap };
+export class HalotradeEVM implements Halotradeish {
+  private static _instances: { [name: string]: HalotradeEVM };
   private chain: AuraEVM | Polygon;
   private _alphaRouter: AlphaRouter;
   private _router: string;
@@ -90,15 +90,18 @@ export class Uniswap implements Uniswapish {
     this._quoterContractAddress = config.quoterContractAddress(network);
   }
 
-  public static getInstance(chain: string, network: string): Uniswap {
-    if (Uniswap._instances === undefined) {
-      Uniswap._instances = {};
+  public static getInstance(chain: string, network: string): HalotradeEVM {
+    if (HalotradeEVM._instances === undefined) {
+      HalotradeEVM._instances = {};
     }
-    if (!(chain + network in Uniswap._instances)) {
-      Uniswap._instances[chain + network] = new Uniswap(chain, network);
+    if (!(chain + network in HalotradeEVM._instances)) {
+      HalotradeEVM._instances[chain + network] = new HalotradeEVM(
+        chain,
+        network
+      );
     }
 
-    return Uniswap._instances[chain + network];
+    return HalotradeEVM._instances[chain + network];
   }
 
   /**
