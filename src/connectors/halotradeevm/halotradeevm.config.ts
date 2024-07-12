@@ -1,13 +1,13 @@
 import { ConfigManagerV2 } from '../../services/config-manager-v2';
 import { AvailableNetworks } from '../../services/config-manager-types';
-export namespace HalotradeEVMConfig {
+export namespace HalotradeevmConfig {
   export interface NetworkConfig {
     allowedSlippage: string;
     gasLimitEstimate: number;
     ttl: number;
     maximumHops: number;
-    halotradeEVMV3SmartOrderRouterAddress: (network: string) => string;
-    halotradeEVMV3NftManagerAddress: (network: string) => string;
+    halotradeevmV3SmartOrderRouterAddress: (network: string) => string;
+    halotradeevmV3NftManagerAddress: (network: string) => string;
     tradingTypes: (type: string) => Array<string>;
     chainType: string;
     availableNetworks: Array<AvailableNetworks>;
@@ -18,20 +18,20 @@ export namespace HalotradeEVMConfig {
 
   export const config: NetworkConfig = {
     allowedSlippage: ConfigManagerV2.getInstance().get(
-      `halotradeEVM.allowedSlippage`
+      `halotradeevm.allowedSlippage`
     ),
     gasLimitEstimate: ConfigManagerV2.getInstance().get(
-      `halotradeEVM.gasLimitEstimate`
+      `halotradeevm.gasLimitEstimate`
     ),
-    ttl: ConfigManagerV2.getInstance().get(`halotradeEVM.ttl`),
-    maximumHops: ConfigManagerV2.getInstance().get(`halotradeEVM.maximumHops`),
-    halotradeEVMV3SmartOrderRouterAddress: (network: string) =>
+    ttl: ConfigManagerV2.getInstance().get(`halotradeevm.ttl`),
+    maximumHops: ConfigManagerV2.getInstance().get(`halotradeevm.maximumHops`),
+    halotradeevmV3SmartOrderRouterAddress: (network: string) =>
       ConfigManagerV2.getInstance().get(
-        `halotradeEVM.contractAddresses.${network}.halotradeEVMV3SmartOrderRouterAddress`
+        `halotradeevm.contractAddresses.${network}.halotradeevmV3SmartOrderRouterAddress`
       ),
-    halotradeEVMV3NftManagerAddress: (network: string) =>
+    halotradeevmV3NftManagerAddress: (network: string) =>
       ConfigManagerV2.getInstance().get(
-        `halotradeEVM.contractAddresses.${network}.halotradeEVMV3NftManagerAddress`
+        `halotradeevm.contractAddresses.${network}.halotradeevmV3NftManagerAddress`
       ),
     tradingTypes: (type: string) => {
       return type === 'swap' ? ['AMM'] : ['AMM_LP'];
@@ -39,21 +39,21 @@ export namespace HalotradeEVMConfig {
     chainType: 'EVM',
     availableNetworks: [
       {
-        chain: 'auraEVM',
+        chain: 'auraevm',
         networks: Object.keys(
-          ConfigManagerV2.getInstance().get('halotradeEVM.contractAddresses')
+          ConfigManagerV2.getInstance().get('halotradeevm.contractAddresses')
         ).filter((network) =>
           Object.keys(
-            ConfigManagerV2.getInstance().get('auraEVM.networks')
+            ConfigManagerV2.getInstance().get('auraevm.networks')
           ).includes(network)
         ),
       },
     ],
-    useRouter: ConfigManagerV2.getInstance().get(`halotradeEVM.useRouter`),
-    feeTier: ConfigManagerV2.getInstance().get(`halotradeEVM.feeTier`),
+    useRouter: ConfigManagerV2.getInstance().get(`halotradeevm.useRouter`),
+    feeTier: ConfigManagerV2.getInstance().get(`halotradeevm.feeTier`),
     quoterContractAddress: (network: string) =>
       ConfigManagerV2.getInstance().get(
-        `halotradeEVM.contractAddresses.${network}.halotradeEVMV3QuoterV2ContractAddress`
+        `halotradeevm.contractAddresses.${network}.halotradeevmV3QuoterV2ContractAddress`
       ),
   };
 }

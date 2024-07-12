@@ -3,25 +3,25 @@ import {
   SERVICE_UNITIALIZED_ERROR_CODE,
   SERVICE_UNITIALIZED_ERROR_MESSAGE,
 } from '../../services/error-handler';
-import { HalotradeEVMConfig } from './halotradeEVM.config';
+import { HalotradeevmConfig } from './halotradeevm.config';
 import { Contract, ContractInterface } from '@ethersproject/contracts';
 import { Token, CurrencyAmount, Percent, Price } from '@uniswap/sdk-core';
 import * as uniV3 from '@uniswap/v3-sdk';
 import { AlphaRouter } from '@uniswap/smart-order-router';
 import { providers, Wallet, Signer, utils } from 'ethers';
 import { percentRegexp } from '../../services/config-manager-v2';
-import { AuraEVM } from '../../chains/auraEVM/auraEVM';
+import { Auraevm } from '../../chains/auraevm/auraevm';
 import {
   PoolState,
   RawPosition,
   AddPosReturn,
   ReduceLiquidityData,
-} from './halotradeEVM.lp.interfaces';
+} from './halotradeevm.lp.interfaces';
 import * as math from 'mathjs';
 import { getAddress } from 'ethers/lib/utils';
 
 export class UniswapLPHelper {
-  protected auraEVM: AuraEVM;
+  protected auraevm: Auraevm;
   protected chainId;
   private _router: string;
   private _nftManager: string;
@@ -36,18 +36,18 @@ export class UniswapLPHelper {
   public abiDecoder: any;
 
   constructor(chain: string, network: string) {
-    this.auraEVM = AuraEVM.getInstance(network);
+    this.auraevm = Auraevm.getInstance(network);
     this._chain = chain;
-    this.chainId = this.auraEVM.chainId;
+    this.chainId = this.auraevm.chainId;
     this._alphaRouter = new AlphaRouter({
       chainId: this.chainId,
-      provider: this.auraEVM.provider,
+      provider: this.auraevm.provider,
     });
     this._router =
-      HalotradeEVMConfig.config.halotradeEVMV3SmartOrderRouterAddress(network);
+      HalotradeevmConfig.config.halotradeevmV3SmartOrderRouterAddress(network);
     this._nftManager =
-      HalotradeEVMConfig.config.halotradeEVMV3NftManagerAddress(network);
-    this._ttl = HalotradeEVMConfig.config.ttl;
+      HalotradeevmConfig.config.halotradeevmV3NftManagerAddress(network);
+    this._ttl = HalotradeevmConfig.config.ttl;
     this._routerAbi =
       require('@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json').abi;
     this._nftAbi =
@@ -102,12 +102,12 @@ export class UniswapLPHelper {
   }
 
   public async init() {
-    if (this._chain == 'auraEVM' && !this.auraEVM.ready())
+    if (this._chain == 'auraevm' && !this.auraevm.ready())
       throw new InitializationError(
         SERVICE_UNITIALIZED_ERROR_MESSAGE('AURA'),
         SERVICE_UNITIALIZED_ERROR_CODE
       );
-    for (const token of this.auraEVM.storedTokenList) {
+    for (const token of this.auraevm.storedTokenList) {
       this.tokenList[token.address] = new Token(
         this.chainId,
         token.address,
@@ -125,7 +125,7 @@ export class UniswapLPHelper {
   }
 
   getSlippagePercentage(): Percent {
-    const allowedSlippage = HalotradeEVMConfig.config.allowedSlippage;
+    const allowedSlippage = HalotradeevmConfig.config.allowedSlippage;
     const nd = allowedSlippage.match(percentRegexp);
     if (nd) return new Percent(nd[1], nd[2]);
     throw new Error(
@@ -157,7 +157,7 @@ export class UniswapLPHelper {
   ): Promise<PoolState> {
     const poolContract = this.getPoolContract(
       poolAddress,
-      this.auraEVM.provider
+      this.auraevm.provider
     );
     const minTick = uniV3.nearestUsableTick(
       uniV3.TickMath.MIN_TICK,
@@ -223,7 +223,7 @@ export class UniswapLPHelper {
     const poolContract = new Contract(
       uniV3.Pool.getAddress(token0, token1, tier),
       this.poolAbi,
-      this.auraEVM.provider
+      this.auraevm.provider
     );
     for (
       let x = Math.ceil(period / interval) * interval;

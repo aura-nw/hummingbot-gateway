@@ -111,7 +111,7 @@ import { BalanceRequest } from '../network/network.requests';
 import { TradeV2 } from '@traderjoe-xyz/sdk-v2';
 import { AuraToken } from '../chains/aura/aura-token';
 import { AuraBase } from '../chains/aura/aura-base';
-import { AuraEVMBase } from '../chains/auraEVM/auraEVM-base';
+import { AuraevmBase } from '../chains/auraevm/auraevm-base';
 
 // TODO Check the possibility to have clob/solana/serum equivalents here
 //  Check this link https://hummingbot.org/developers/gateway/building-gateway-connectors/#5-add-sdk-classes-to-uniswapish-interface
@@ -303,7 +303,7 @@ export interface Uniswapish {
   ): Promise<Transaction>;
 }
 
-export interface HalotradeEVMish {
+export interface Halotradeevmish {
   /**
    * Router address.
    */
@@ -924,7 +924,7 @@ export interface Auraish extends AuraBase {
   chain: string;
 }
 
-export interface AuraEVMish extends BasicChainMethods, AuraEVMBase {
+export interface Auraevmish extends BasicChainMethods, AuraevmBase {
   controller: any;
   cancelTx(wallet: Wallet, nonce: number): Promise<Transaction>;
   getContract(

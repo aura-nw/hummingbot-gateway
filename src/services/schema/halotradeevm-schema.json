@@ -16,13 +16,13 @@
           "^\\w+$": {
             "type": "object",
             "properties": {
-              "halotradeEVMV3SmartOrderRouterAddress": { "type": "string" },
-              "halotradeEVMV3NftManagerAddress": { "type": "string" },
-              "halotradeEVMV3QuoterV2ContractAddress": { "type": "string" }
+              "halotradeevmV3SmartOrderRouterAddress": { "type": "string" },
+              "halotradeevmV3NftManagerAddress": { "type": "string" },
+              "halotradeevmV3QuoterV2ContractAddress": { "type": "string" }
             },
             "required": [
-              "halotradeEVMV3SmartOrderRouterAddress",
-              "halotradeEVMV3NftManagerAddress"
+              "halotradeevmV3SmartOrderRouterAddress",
+              "halotradeevmV3NftManagerAddress"
             ],
             "additionalProperties": false
           }

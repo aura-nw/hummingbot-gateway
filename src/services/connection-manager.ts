@@ -28,7 +28,7 @@ import {
   UniswapLPish,
   Xdcish,
   Tezosish,
-  AuraEVMish,
+  Auraevmish,
 } from './common-interfaces';
 import { Traderjoe } from '../connectors/traderjoe/traderjoe';
 import { Sushiswap } from '../connectors/sushiswap/sushiswap';
@@ -44,9 +44,9 @@ import { Plenty } from '../connectors/plenty/plenty';
 import { Kujira } from '../chains/kujira/kujira';
 import { KujiraCLOB } from '../connectors/kujira/kujira';
 import { Aura } from '../chains/aura/aura';
-import { AuraEVM } from '../chains/auraEVM/auraEVM';
+import { Auraevm } from '../chains/auraevm/auraevm';
 import { Halotrade } from '../connectors/halotrade/halotrade';
-import { HalotradeEVM } from '../connectors/halotradeEVM/halotradeEVM';
+import { Halotradeevm } from '../connectors/halotradeevm/halotradeevm';
 
 export type ChainUnion =
   | Algorand
@@ -58,7 +58,7 @@ export type ChainUnion =
   | Tezosish
   | Kujira
   | Aura
-  | AuraEVMish;
+  | Auraevmish;
 
 export type Chain<T> = T extends Algorand
   ? Algorand
@@ -66,8 +66,8 @@ export type Chain<T> = T extends Algorand
   ? Cosmos
   : T extends Ethereumish
   ? Ethereumish
-  : T extends AuraEVMish
-  ? AuraEVMish
+  : T extends Auraevmish
+  ? Auraevmish
   : T extends Nearish
   ? Nearish
   : T extends Xdcish
@@ -131,8 +131,8 @@ export async function getChainInstance(
     connection = Cosmos.getInstance(network);
   } else if (chain === 'aura') {
     connection = Aura.getInstance(network);
-  } else if (chain === 'auraEVM') {
-    connection = AuraEVM.getInstance(network);
+  } else if (chain === 'auraevm') {
+    connection = Auraevm.getInstance(network);
   } else if (chain === 'near') {
     connection = Near.getInstance(network);
   } else if (chain === 'binance-smart-chain') {
@@ -163,7 +163,7 @@ export type ConnectorUnion =
   | Plenty
   | KujiraCLOB
   | Halotrade
-  | HalotradeEVM;
+  | Halotradeevm;
 
 export type Connector<T> = T extends Uniswapish
   ? Uniswapish
@@ -185,8 +185,8 @@ export type Connector<T> = T extends Uniswapish
   ? KujiraCLOB
   : T extends Halotrade
   ? Halotrade
-  : T extends HalotradeEVM
-  ? HalotradeEVM
+  : T extends Halotradeevm
+  ? Halotradeevm
   : never;
 
 export async function getConnector<T>(
@@ -245,8 +245,8 @@ export async function getConnector<T>(
     connectorInstance = KujiraCLOB.getInstance(chain, network);
   } else if (chain === 'aura' && connector === 'halotrade') {
     connectorInstance = Halotrade.getInstance(chain, network);
-  } else if (chain === 'auraEVM' && connector === 'halotradeEVM') {
-    connectorInstance = HalotradeEVM.getInstance(chain, network);
+  } else if (chain === 'auraevm' && connector === 'halotradeevm') {
+    connectorInstance = Halotradeevm.getInstance(chain, network);
   } else {
     throw new Error('unsupported chain or connector');
   }

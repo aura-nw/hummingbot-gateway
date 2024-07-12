@@ -1,6 +1,6 @@
 import { logger } from '../../services/logger';
 import { PositionInfo, UniswapLPish } from '../../services/common-interfaces';
-import { HalotradeEVMConfig } from './halotradeEVM.config';
+import { HalotradeevmConfig } from './halotradeevm.config';
 import { Token } from '@uniswap/sdk-core';
 import * as uniV3 from '@uniswap/v3-sdk';
 import {
@@ -11,8 +11,8 @@ import {
   constants,
   providers,
 } from 'ethers';
-import { UniswapLPHelper } from './halotradeEVM.lp.helper';
-import { AddPosReturn } from './halotradeEVM.lp.interfaces';
+import { UniswapLPHelper } from './halotradeevm.lp.helper';
+import { AddPosReturn } from './halotradeevm.lp.interfaces';
 
 const MaxUint128 = BigNumber.from(2).pow(128).sub(1);
 
@@ -31,7 +31,7 @@ export class UniswapLP extends UniswapLPHelper implements UniswapLPish {
 
   private constructor(chain: string, network: string) {
     super(chain, network);
-    this._gasLimitEstimate = HalotradeEVMConfig.config.gasLimitEstimate;
+    this._gasLimitEstimate = HalotradeevmConfig.config.gasLimitEstimate;
   }
 
   public static getInstance(chain: string, network: string): UniswapLP {
@@ -53,10 +53,10 @@ export class UniswapLP extends UniswapLPHelper implements UniswapLPish {
   }
 
   async getPosition(tokenId: number): Promise<PositionInfo> {
-    const contract = this.getContract('nft', this.auraEVM.provider);
+    const contract = this.getContract('nft', this.auraevm.provider);
     const requests = [
       contract.positions(tokenId),
-      this.collectFees(this.auraEVM.provider, tokenId), // static call to calculate earned fees
+      this.collectFees(this.auraevm.provider, tokenId), // static call to calculate earned fees
     ];
     const positionInfoReq = await Promise.allSettled(requests);
     const rejected = positionInfoReq.filter(
@@ -140,7 +140,7 @@ export class UniswapLP extends UniswapLPHelper implements UniswapLPish {
     );
 
     if (nonce === undefined) {
-      nonce = await this.auraEVM.nonceManager.getNextNonce(wallet.address);
+      nonce = await this.auraevm.nonceManager.getNextNonce(wallet.address);
     }
 
     const tx = await wallet.sendTransaction({
@@ -178,7 +178,7 @@ export class UniswapLP extends UniswapLPHelper implements UniswapLPish {
     );
 
     if (nonce === undefined) {
-      nonce = await this.auraEVM.nonceManager.getNextNonce(wallet.address);
+      nonce = await this.auraevm.nonceManager.getNextNonce(wallet.address);
     }
 
     const tx = await contract.multicall(
@@ -218,7 +218,7 @@ export class UniswapLP extends UniswapLPHelper implements UniswapLPish {
     } else {
       collectData.recipient = wallet.address;
       if (nonce === undefined) {
-        nonce = await this.auraEVM.nonceManager.getNextNonce(wallet.address);
+        nonce = await this.auraevm.nonceManager.getNextNonce(wallet.address);
       }
       return await contract.collect(
         collectData,

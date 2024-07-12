@@ -22,7 +22,7 @@ import { TinymanConfig } from './tinyman/tinyman.config';
 import { PlentyConfig } from './plenty/plenty.config';
 import { KujiraConfig } from './kujira/kujira.config';
 import { HalotradeConfig } from './halotrade/halotrade.config';
-import { HalotradeEVMConfig } from './halotradeEVM/halotradeEVM.config';
+import { HalotradeevmConfig } from './halotradeevm/halotradeevm.config';
 
 export namespace ConnectorsRoutes {
   export const router = Router();
@@ -178,19 +178,19 @@ export namespace ConnectorsRoutes {
             available_networks: HalotradeConfig.config.availableNetworks,
           },
           {
-            name: 'halotradeEVM',
-            trading_type: HalotradeEVMConfig.config.tradingTypes('swap'),
-            chain_type: HalotradeEVMConfig.config.chainType,
-            available_networks: HalotradeEVMConfig.config.availableNetworks,
+            name: 'halotradeevm',
+            trading_type: HalotradeevmConfig.config.tradingTypes('swap'),
+            chain_type: HalotradeevmConfig.config.chainType,
+            available_networks: HalotradeevmConfig.config.availableNetworks,
           },
           {
-            name: 'halotradeEVMLP',
-            trading_type: HalotradeEVMConfig.config.tradingTypes('LP'),
-            chain_type: HalotradeEVMConfig.config.chainType,
+            name: 'halotradeevmLP',
+            trading_type: HalotradeevmConfig.config.tradingTypes('LP'),
+            chain_type: HalotradeevmConfig.config.chainType,
             available_networks: JSON.parse(
-              JSON.stringify(HalotradeEVMConfig.config.availableNetworks)
+              JSON.stringify(HalotradeevmConfig.config.availableNetworks)
             ),
-            additional_spenders: ['halotradeEVM'],
+            additional_spenders: ['halotradeevm'],
           },
         ],
       });

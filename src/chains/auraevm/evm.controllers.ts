@@ -14,18 +14,18 @@ import {
   TOKEN_NOT_SUPPORTED_ERROR_MESSAGE,
 } from '../../services/error-handler';
 import { tokenValueToString } from '../../services/base';
-import { TokenInfo } from './auraEVM-base';
+import { TokenInfo } from './auraevm-base';
 import { getConnector } from '../../services/connection-manager';
 
 import {
   CustomTransactionReceipt,
   CustomTransactionResponse,
   PollRequest,
-} from './auraEVM.requests';
+} from './auraevm.requests';
 import {
   CLOBish,
-  AuraEVMish,
-  HalotradeEVMish,
+  Auraevmish,
+  Halotradeevmish,
 } from '../../services/common-interfaces';
 import {
   NonceRequest,
@@ -42,7 +42,7 @@ import {
   validateBalanceRequest,
   validateCancelRequest,
   validateNonceRequest,
-} from './auraEVM.validators';
+} from './auraevm.validators';
 import { validatePollRequest, validateTokensRequest } from '../chain.routes';
 
 // TransactionReceipt from ethers uses BigNumber which is not easy to interpret directly from JSON.
@@ -127,11 +127,11 @@ export class EVMController {
   // 2: in the mempool and likely to succeed
   // 3: in the mempool and likely to fail
   // 0: in the mempool but we dont have data to guess its status
-  static async poll(auraEVMish: AuraEVMish, req: PollRequest) {
+  static async poll(auraevmish: Auraevmish, req: PollRequest) {
     validatePollRequest(req);
 
-    const currentBlock = await auraEVMish.getCurrentBlockNumber();
-    const txData = await auraEVMish.getTransaction(req.txHash);
+    const currentBlock = await auraevmish.getCurrentBlockNumber();
+    const txData = await auraevmish.getTransaction(req.txHash);
     let txBlock, txReceipt, txStatus;
     if (!txData) {
       // tx not found, didn't reach the mempool or it never existed
@@ -139,16 +139,16 @@ export class EVMController {
       txReceipt = null;
       txStatus = -1;
     } else {
-      txReceipt = await auraEVMish.getTransactionReceipt(req.txHash);
+      txReceipt = await auraevmish.getTransactionReceipt(req.txHash);
       if (txReceipt === null) {
         // tx is in the mempool
         txBlock = -1;
         txReceipt = null;
         txStatus = 0;
 
-        const transactions = await auraEVMish.txStorage.getTxs(
-          auraEVMish.chain,
-          auraEVMish.chainId
+        const transactions = await auraevmish.txStorage.getTxs(
+          auraevmish.chain,
+          auraevmish.chainId
         );
 
         if (transactions[txData.hash]) {
@@ -156,7 +156,7 @@ export class EVMController {
           const now = new Date();
           const txDuration = Math.abs(now.getTime() - data[0].getTime());
           if (
-            willTxSucceed(txDuration, 60000 * 3, data[1], auraEVMish.gasPrice)
+            willTxSucceed(txDuration, 60000 * 3, data[1], auraevmish.gasPrice)
           ) {
             txStatus = 2;
           } else {
@@ -171,8 +171,8 @@ export class EVMController {
         // decode logs
         if (req.connector) {
           try {
-            const connector: HalotradeEVMish =
-              await getConnector<HalotradeEVMish>(
+            const connector: Halotradeevmish =
+              await getConnector<Halotradeevmish>(
                 req.chain,
                 req.network,
                 req.connector
@@ -187,7 +187,7 @@ export class EVMController {
     }
 
     logger.info(
-      `Poll ${auraEVMish.chain}, txHash ${req.txHash}, status ${txStatus}.`
+      `Poll ${auraevmish.chain}, txHash ${req.txHash}, status ${txStatus}.`
     );
     return {
       currentBlock,
@@ -200,45 +200,45 @@ export class EVMController {
   }
 
   static async nonce(
-    auraEVM: AuraEVMish,
+    auraevm: Auraevmish,
     req: NonceRequest
   ): Promise<NonceResponse> {
     validateNonceRequest(req);
     // get the address via the public key since we generally use the public
     // key to interact with gateway and the address is not part of the user config
-    const wallet = await auraEVM.getWallet(req.address);
-    const nonce = await auraEVM.nonceManager.getNonce(wallet.address);
+    const wallet = await auraevm.getWallet(req.address);
+    const nonce = await auraevm.nonceManager.getNonce(wallet.address);
     return { nonce };
   }
 
   static async nextNonce(
-    auraEVM: AuraEVMish,
+    auraevm: Auraevmish,
     req: NonceRequest
   ): Promise<NonceResponse> {
     validateNonceRequest(req);
     // get the address via the public key since we generally use the public
     // key to interact with gateway and the address is not part of the user config
-    const wallet = await auraEVM.getWallet(req.address);
-    const nonce = await auraEVM.nonceManager.getNextNonce(wallet.address);
+    const wallet = await auraevm.getWallet(req.address);
+    const nonce = await auraevm.nonceManager.getNextNonce(wallet.address);
     return { nonce };
   }
 
   static getTokenSymbolsToTokens = (
-    auraEVM: AuraEVMish,
+    auraevm: Auraevmish,
     tokenSymbols: Array<string>
   ): Record<string, TokenInfo> => {
     const tokens: Record<string, TokenInfo> = {};
 
     for (let i = 0; i < tokenSymbols.length; i++) {
       const symbol = tokenSymbols[i];
-      const token = auraEVM.getTokenBySymbol(symbol);
+      const token = auraevm.getTokenBySymbol(symbol);
       if (token) tokens[symbol] = token;
     }
 
     return tokens;
   };
 
-  static async getTokens(connection: AuraEVMish, req: TokensRequest) {
+  static async getTokens(connection: Auraevmish, req: TokensRequest) {
     validateTokensRequest(req);
     let tokens: TokenInfo[] = [];
     if (!req.tokenSymbols) {
@@ -252,32 +252,32 @@ export class EVMController {
     return { tokens };
   }
 
-  static async allowances(auraEVMish: AuraEVMish, req: AllowancesRequest) {
+  static async allowances(auraevmish: Auraevmish, req: AllowancesRequest) {
     validateAllowancesRequest(req);
-    return EVMController.allowancesWithoutValidation(auraEVMish, req);
+    return EVMController.allowancesWithoutValidation(auraevmish, req);
   }
 
   static async allowancesWithoutValidation(
-    auraEVMish: AuraEVMish,
+    auraevmish: Auraevmish,
     req: AllowancesRequest
   ) {
-    const wallet = await auraEVMish.getWallet(req.address);
+    const wallet = await auraevmish.getWallet(req.address);
     const tokens = EVMController.getTokenSymbolsToTokens(
-      auraEVMish,
+      auraevmish,
       req.tokenSymbols
     );
-    const spender = auraEVMish.getSpender(req.spender);
+    const spender = auraevmish.getSpender(req.spender);
 
     const approvals: Record<string, string> = {};
     await Promise.all(
       Object.keys(tokens).map(async (symbol) => {
         // instantiate a contract and pass in provider for read-only access
-        const contract = auraEVMish.getContract(
+        const contract = auraevmish.getContract(
           tokens[symbol].address,
-          auraEVMish.provider
+          auraevmish.provider
         );
         approvals[symbol] = tokenValueToString(
-          await auraEVMish.getERC20Allowance(
+          await auraevmish.getERC20Allowance(
             contract,
             wallet,
             spender,
@@ -293,7 +293,7 @@ export class EVMController {
     };
   }
 
-  static async balances(auraEVMish: AuraEVMish, req: BalanceRequest) {
+  static async balances(auraevmish: Auraevmish, req: BalanceRequest) {
     validateBalanceRequest(req);
 
     let wallet: Wallet;
@@ -305,7 +305,7 @@ export class EVMController {
 
     if (!connector?.balances) {
       try {
-        wallet = await auraEVMish.getWallet(req.address);
+        wallet = await auraevmish.getWallet(req.address);
       } catch (err) {
         throw new HttpException(
           500,
@@ -315,12 +315,12 @@ export class EVMController {
       }
 
       const tokens = EVMController.getTokenSymbolsToTokens(
-        auraEVMish,
+        auraevmish,
         req.tokenSymbols
       );
-      if (req.tokenSymbols.includes(auraEVMish.nativeTokenSymbol)) {
-        balances[auraEVMish.nativeTokenSymbol] = tokenValueToString(
-          await auraEVMish.getNativeBalance(wallet)
+      if (req.tokenSymbols.includes(auraevmish.nativeTokenSymbol)) {
+        balances[auraevmish.nativeTokenSymbol] = tokenValueToString(
+          await auraevmish.getNativeBalance(wallet)
         );
       }
       await Promise.all(
@@ -329,11 +329,11 @@ export class EVMController {
             const address = tokens[symbol].address;
             const decimals = tokens[symbol].decimals;
             // instantiate a contract and pass in provider for read-only access
-            const contract = auraEVMish.getContract(
+            const contract = auraevmish.getContract(
               address,
-              auraEVMish.provider
+              auraevmish.provider
             );
-            const balance = await auraEVMish.getERC20Balance(
+            const balance = await auraevmish.getERC20Balance(
               contract,
               wallet,
               decimals
@@ -360,13 +360,13 @@ export class EVMController {
     };
   }
 
-  static async approve(auraEVMish: AuraEVMish, req: ApproveRequest) {
+  static async approve(auraevmish: Auraevmish, req: ApproveRequest) {
     validateApproveRequest(req);
-    return await EVMController.approveWithoutValidation(auraEVMish, req);
+    return await EVMController.approveWithoutValidation(auraevmish, req);
   }
 
   static async approveWithoutValidation(
-    auraEVMish: AuraEVMish,
+    auraevmish: Auraevmish,
     req: ApproveRequest
   ) {
     const {
@@ -378,10 +378,10 @@ export class EVMController {
       maxPriorityFeePerGas,
     } = req;
 
-    const spender = auraEVMish.getSpender(req.spender);
+    const spender = auraevmish.getSpender(req.spender);
     let wallet: Wallet;
     try {
-      wallet = await auraEVMish.getWallet(address);
+      wallet = await auraevmish.getWallet(address);
     } catch (err) {
       throw new HttpException(
         500,
@@ -389,7 +389,7 @@ export class EVMController {
         LOAD_WALLET_ERROR_CODE
       );
     }
-    const fullToken = auraEVMish.getTokenBySymbol(token);
+    const fullToken = auraevmish.getTokenBySymbol(token);
     if (!fullToken) {
       throw new HttpException(
         500,
@@ -410,11 +410,11 @@ export class EVMController {
       maxPriorityFeePerGasBigNumber = BigNumber.from(maxPriorityFeePerGas);
     }
     // instantiate a contract and pass in wallet, which act on behalf of that signer
-    const contract = auraEVMish.getContract(fullToken.address, wallet);
+    const contract = auraevmish.getContract(fullToken.address, wallet);
 
     // convert strings to BigNumber
     // call approve function
-    const approval = await auraEVMish.approveERC20(
+    const approval = await auraevmish.approveERC20(
       contract,
       wallet,
       spender,
@@ -422,16 +422,16 @@ export class EVMController {
       nonce,
       maxFeePerGasBigNumber,
       maxPriorityFeePerGasBigNumber,
-      auraEVMish.gasPrice
+      auraevmish.gasPrice
     );
 
     if (approval.hash) {
-      await auraEVMish.txStorage.saveTx(
-        auraEVMish.chain,
-        auraEVMish.chainId,
+      await auraevmish.txStorage.saveTx(
+        auraevmish.chain,
+        auraevmish.chainId,
         approval.hash,
         new Date(),
-        auraEVMish.gasPrice
+        auraevmish.gasPrice
       );
     }
 
@@ -444,11 +444,11 @@ export class EVMController {
     };
   }
 
-  static async cancel(auraEVMish: AuraEVMish, req: CancelRequest) {
+  static async cancel(auraevmish: Auraevmish, req: CancelRequest) {
     validateCancelRequest(req);
     let wallet: Wallet;
     try {
-      wallet = await auraEVMish.getWallet(req.address);
+      wallet = await auraevmish.getWallet(req.address);
     } catch (err) {
       throw new HttpException(
         500,
@@ -458,7 +458,7 @@ export class EVMController {
     }
 
     // call cancelTx function
-    const cancelTx = await auraEVMish.cancelTx(wallet, req.nonce);
+    const cancelTx = await auraevmish.cancelTx(wallet, req.nonce);
 
     logger.info(
       `Cancelled transaction at nonce ${req.nonce}, cancel txHash ${cancelTx.hash}.`

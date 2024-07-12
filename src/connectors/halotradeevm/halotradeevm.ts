@@ -1,7 +1,7 @@
 import { UniswapishPriceError } from '../../services/error-handler';
 import { isFractionString } from '../../services/validators';
-import { HalotradeEVMConfig } from './halotradeEVM.config';
-import routerAbi from './halotradeEVM_v2_router_abi.json';
+import { HalotradeevmConfig } from './halotradeevm.config';
+import routerAbi from './halotradeevm_v2_router_abi.json';
 import {
   ContractInterface,
   ContractTransaction,
@@ -36,17 +36,17 @@ import {
 } from 'ethers';
 import { logger } from '../../services/logger';
 import { percentRegexp } from '../../services/config-manager-v2';
-import { AuraEVM } from '../../chains/auraEVM/auraEVM';
+import { Auraevm } from '../../chains/auraevm/auraevm';
 // import { Polygon } from '../../chains/polygon/polygon';
 import {
   ExpectedTrade,
-  HalotradeEVMish,
+  Halotradeevmish,
 } from '../../services/common-interfaces';
 import { getAddress } from 'ethers/lib/utils';
 
-export class HalotradeEVM implements HalotradeEVMish {
-  private static _instances: { [name: string]: HalotradeEVM };
-  private chain: AuraEVM;
+export class Halotradeevm implements Halotradeevmish {
+  private static _instances: { [name: string]: Halotradeevm };
+  private chain: Auraevm;
   // | Polygon;
   private _alphaRouter: AlphaRouter;
   private _router: string;
@@ -62,23 +62,23 @@ export class HalotradeEVM implements HalotradeEVMish {
   private readonly _quoterContractAddress: string;
 
   private constructor(_chain: string, network: string) {
-    const config = HalotradeEVMConfig.config;
-    // if (chain === 'auraEVM') {
-    this.chain = AuraEVM.getInstance(network);
+    const config = HalotradeevmConfig.config;
+    // if (chain === 'auraevm') {
+    this.chain = Auraevm.getInstance(network);
     // }
     // else {
     //   this.chain = Polygon.getInstance(network);
     // }
     this.chainId = this.chain.chainId;
-    this._ttl = HalotradeEVMConfig.config.ttl;
-    this._maximumHops = HalotradeEVMConfig.config.maximumHops;
+    this._ttl = HalotradeevmConfig.config.ttl;
+    this._maximumHops = HalotradeevmConfig.config.maximumHops;
     this._alphaRouter = new AlphaRouter({
       chainId: this.chainId,
       provider: this.chain.provider,
     });
     this._routerAbi = routerAbi.abi;
-    this._gasLimitEstimate = HalotradeEVMConfig.config.gasLimitEstimate;
-    this._router = config.halotradeEVMV3SmartOrderRouterAddress(network);
+    this._gasLimitEstimate = HalotradeevmConfig.config.gasLimitEstimate;
+    this._router = config.halotradeevmV3SmartOrderRouterAddress(network);
 
     if (config.useRouter === false && config.feeTier == null) {
       throw new Error('Must specify fee tier if not using router');
@@ -95,18 +95,18 @@ export class HalotradeEVM implements HalotradeEVMish {
     this._quoterContractAddress = config.quoterContractAddress(network);
   }
 
-  public static getInstance(chain: string, network: string): HalotradeEVM {
-    if (HalotradeEVM._instances === undefined) {
-      HalotradeEVM._instances = {};
+  public static getInstance(chain: string, network: string): Halotradeevm {
+    if (Halotradeevm._instances === undefined) {
+      Halotradeevm._instances = {};
     }
-    if (!(chain + network in HalotradeEVM._instances)) {
-      HalotradeEVM._instances[chain + network] = new HalotradeEVM(
+    if (!(chain + network in Halotradeevm._instances)) {
+      Halotradeevm._instances[chain + network] = new Halotradeevm(
         chain,
         network
       );
     }
 
-    return HalotradeEVM._instances[chain + network];
+    return Halotradeevm._instances[chain + network];
   }
 
   /**
@@ -193,7 +193,7 @@ export class HalotradeEVM implements HalotradeEVMish {
       return new Percent(fractionSplit[0], fractionSplit[1]);
     }
 
-    const allowedSlippage = HalotradeEVMConfig.config.allowedSlippage;
+    const allowedSlippage = HalotradeevmConfig.config.allowedSlippage;
     const nd = allowedSlippage.match(percentRegexp);
     if (nd) return new Percent(nd[1], nd[2]);
     throw new Error(

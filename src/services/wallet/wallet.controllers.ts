@@ -35,7 +35,7 @@ import {
 import { Ethereumish, Tezosish } from '../common-interfaces';
 import { Algorand } from '../../chains/algorand/algorand';
 import { Aura } from '../../chains/aura/aura';
-import { AuraEVMBase } from '../../chains/auraEVM/auraEVM-base';
+import { AuraevmBase } from '../../chains/auraevm/auraevm-base';
 
 export function convertXdcAddressToEthAddress(publicKey: string): string {
   return publicKey.length === 43 && publicKey.slice(0, 3) === 'xdc'
@@ -96,7 +96,7 @@ export async function addWallet(
         req.privateKey,
         passphrase
       );
-    } else if (connection instanceof AuraEVMBase) {
+    } else if (connection instanceof AuraevmBase) {
       address = connection.getWalletFromPrivateKey(req.privateKey).address;
       encryptedPrivateKey = await connection.encrypt(
         req.privateKey,

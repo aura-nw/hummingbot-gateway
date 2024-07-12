@@ -6,7 +6,7 @@ import {
 import { BigNumber, utils, Wallet } from 'ethers';
 import LRUCache from 'lru-cache';
 import { env } from 'process';
-import { AuraEVMish } from '../../services/common-interfaces';
+import { Auraevmish } from '../../services/common-interfaces';
 import { logger } from '../../services/logger';
 
 /**
@@ -18,14 +18,14 @@ import { logger } from '../../services/logger';
  * Mainly used for working in a Node Environment
  */
 export class EVMTxBroadcaster {
-  private _chain: AuraEVMish;
+  private _chain: Auraevmish;
   private _isBlocked: boolean;
   private _txQueue: TransactionRequest[];
   private static _instances: LRUCache<string, EVMTxBroadcaster>;
   private _wallet_address: string;
   private _wallet: Wallet | undefined;
 
-  constructor(chain: AuraEVMish, wallet_address: string) {
+  constructor(chain: Auraevmish, wallet_address: string) {
     this._chain = chain;
     this._wallet_address = wallet_address;
     this._isBlocked = false;
@@ -33,7 +33,7 @@ export class EVMTxBroadcaster {
   }
 
   public static getInstance(
-    chain: AuraEVMish,
+    chain: Auraevmish,
     wallet_address: string
   ): EVMTxBroadcaster {
     if (EVMTxBroadcaster._instances === undefined) {

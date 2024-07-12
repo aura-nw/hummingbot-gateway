@@ -1,15 +1,15 @@
 import abi from '../ethereum/ethereum.abi.json';
 import { logger } from '../../services/logger';
 import { BigNumber, Contract, Transaction, Wallet } from 'ethers';
-import { AuraEVMBase } from './auraEVM-base';
-import { getAuraEVMConfig } from './auraEVM.config';
+import { AuraevmBase } from './auraevm-base';
+import { getAuraevmConfig } from './auraevm.config';
 import { Provider } from '@ethersproject/abstract-provider';
 import { ConfigManagerV2 } from '../../services/config-manager-v2';
 // import { throttleRetryWrapper } from '../../services/retry';
-import { AuraEVMish } from '../../services/common-interfaces';
+import { Auraevmish } from '../../services/common-interfaces';
 import { EVMController } from './evm.controllers';
 
-import { HalotradeEVMConfig } from '../../connectors/halotradeEVM/halotradeEVM.config';
+import { HalotradeevmConfig } from '../../connectors/halotradeevm/halotradeevm.config';
 import { Perp } from '../../connectors/perp/perp';
 import { OpenoceanConfig } from '../../connectors/openocean/openocean.config';
 
@@ -23,8 +23,8 @@ const MKR_ADDRESS = '0x80b5a32E4F032B2a058b4F29EC95EEfEEB87aDcd';
 //   oldestBlock: string;
 // }
 
-export class AuraEVM extends AuraEVMBase implements AuraEVMish {
-  private static _instances: { [name: string]: AuraEVM };
+export class Auraevm extends AuraevmBase implements Auraevmish {
+  private static _instances: { [name: string]: Auraevm };
   private _gasPrice: number;
   private _gasPriceRefreshInterval: number | null;
   private _nativeTokenSymbol: string;
@@ -35,9 +35,9 @@ export class AuraEVM extends AuraEVMBase implements AuraEVMish {
   public controller;
 
   private constructor(network: string) {
-    const config = getAuraEVMConfig('auraEVM', network);
+    const config = getAuraevmConfig('auraevm', network);
     super(
-      'auraEVM',
+      'auraevm',
       config.network.chainID,
       config.network.nodeURL,
       config.network.tokenListSource,
@@ -68,19 +68,19 @@ export class AuraEVM extends AuraEVMBase implements AuraEVMish {
     this.controller = EVMController;
   }
 
-  public static getInstance(network: string): AuraEVM {
-    if (AuraEVM._instances === undefined) {
-      AuraEVM._instances = {};
+  public static getInstance(network: string): Auraevm {
+    if (Auraevm._instances === undefined) {
+      Auraevm._instances = {};
     }
-    if (!(network in AuraEVM._instances)) {
-      AuraEVM._instances[network] = new AuraEVM(network);
+    if (!(network in Auraevm._instances)) {
+      Auraevm._instances[network] = new Auraevm(network);
     }
 
-    return AuraEVM._instances[network];
+    return Auraevm._instances[network];
   }
 
-  public static getConnectedInstances(): { [name: string]: AuraEVM } {
-    return AuraEVM._instances;
+  public static getConnectedInstances(): { [name: string]: Auraevm } {
+    return Auraevm._instances;
   }
 
   public requestCounter(msg: any): void {
@@ -148,7 +148,7 @@ export class AuraEVM extends AuraEVMBase implements AuraEVMish {
   }
 
   /**
-   * Get the base gas fee from and the current max priority fee from the AuraEVM
+   * Get the base gas fee from and the current max priority fee from the Auraevm
    * node, and add them together.
    */
   async getGasPriceFromEthereumNode(): Promise<number> {
@@ -175,12 +175,12 @@ export class AuraEVM extends AuraEVMBase implements AuraEVMish {
   // Use the following link: https://hummingbot.org/developers/gateway/building-gateway-connectors/#6-add-connector-to-spender-list
   getSpender(reqSpender: string): string {
     let spender: string;
-    if (reqSpender === 'halotradeEVM') {
-      spender = HalotradeEVMConfig.config.halotradeEVMV3SmartOrderRouterAddress(
+    if (reqSpender === 'halotradeevm') {
+      spender = HalotradeevmConfig.config.halotradeevmV3SmartOrderRouterAddress(
         this._chain
       );
-    } else if (reqSpender === 'halotradeEVMLP') {
-      spender = HalotradeEVMConfig.config.halotradeEVMV3NftManagerAddress(
+    } else if (reqSpender === 'halotradeevmLP') {
+      spender = HalotradeevmConfig.config.halotradeevmV3NftManagerAddress(
         this._chain
       );
     } else if (reqSpender === 'perp') {
@@ -209,8 +209,8 @@ export class AuraEVM extends AuraEVMBase implements AuraEVMish {
   async close() {
     await super.close();
     clearInterval(this._metricTimer);
-    if (this._chain in AuraEVM._instances) {
-      delete AuraEVM._instances[this._chain];
+    if (this._chain in Auraevm._instances) {
+      delete Auraevm._instances[this._chain];
     }
   }
 }

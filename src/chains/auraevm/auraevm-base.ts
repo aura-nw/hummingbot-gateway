@@ -33,7 +33,7 @@ export type NewBlockHandler = (bn: number) => void;
 
 export type NewDebugMsgHandler = (msg: any) => void;
 
-export class AuraEVMBase {
+export class AuraevmBase {
   private _provider;
   protected tokenList: TokenInfo[] = [];
   private _tokenMap: Record<string, TokenInfo> = {};

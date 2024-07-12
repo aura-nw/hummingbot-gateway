@@ -23,7 +23,7 @@ export interface Config {
   gasLimitTransaction: number;
 }
 
-export function getAuraEVMConfig(
+export function getAuraevmConfig(
   chainName: string,
   networkName: string
 ): Config {
