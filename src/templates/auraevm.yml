@@ -1,6 +1,6 @@
 networks:
   mainnet:
-    chainID: 10 # 10 # 6322
+    chainID: 1 # 1 # 6322
     nodeURL: https://jsonrpc.aura.network
     tokenListType: FILE
     nativeCurrencySymbol: AURA

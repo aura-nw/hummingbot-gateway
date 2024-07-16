@@ -1,0 +1,3 @@
+class UniswapMulticallProvider extends multicall_provider_1.IMulticallProvider {
+Added chainID: /home/haitran/Github/AURANetwork/hummingbot-gateway/node_modules/@uniswap/smart-order-router/build/module/util/chains.d.ts
+Config addresses: /home/haitran/Github/AURANetwork/hummingbot-gateway/node_modules/@uniswap/smart-order-router/build/module/util/addresses.js

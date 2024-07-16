@@ -4,7 +4,7 @@ networks:
     tokenListType: FILE
     tokenListSource: /home/haitran/Github/AURANetwork/hummingbot-gateway/conf/lists/aura_xstaxy.json
     routerAddress: aura10lfagekpspw59za99x98tuxfsegx3v5sxycntqnfd4vj7e6xzq0skguqty
-    defaultGasPrice: 0.00001uaura
+    defaultGasPrice: 0.001uaura
   euphoria:
     nodeURL: https://rpc.euphoria.aura.network
     tokenListType: FILE

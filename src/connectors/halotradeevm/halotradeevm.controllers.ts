@@ -25,7 +25,7 @@ import {
   Auraevmish,
   ExpectedTrade,
   Halotradeevmish,
-  UniswapLPish,
+  HalotradeevmLPish,
   Tokenish,
   Fractionish,
 } from '../../services/common-interfaces';
@@ -365,7 +365,7 @@ export async function trade(
 
 export async function addLiquidity(
   auraevmish: Auraevmish,
-  halotradeevmish: UniswapLPish,
+  halotradeevmish: HalotradeevmLPish,
   req: AddLiquidityRequest
 ): Promise<AddLiquidityResponse> {
   const startTimestamp: number = Date.now();
@@ -436,7 +436,7 @@ export async function addLiquidity(
 
 export async function removeLiquidity(
   auraevmish: Auraevmish,
-  halotradeevmish: UniswapLPish,
+  halotradeevmish: HalotradeevmLPish,
   req: RemoveLiquidityRequest
 ): Promise<RemoveLiquidityResponse> {
   const startTimestamp: number = Date.now();
@@ -484,7 +484,7 @@ export async function removeLiquidity(
 
 export async function collectEarnedFees(
   auraevmish: Auraevmish,
-  halotradeevmish: UniswapLPish,
+  halotradeevmish: HalotradeevmLPish,
   req: CollectEarnedFeesRequest
 ): Promise<RemoveLiquidityResponse> {
   const startTimestamp: number = Date.now();
@@ -533,7 +533,7 @@ export async function collectEarnedFees(
 
 export async function positionInfo(
   auraevmish: Auraevmish,
-  halotradeevmish: UniswapLPish,
+  halotradeevmish: HalotradeevmLPish,
   req: PositionRequest
 ): Promise<PositionResponse> {
   const startTimestamp: number = Date.now();
@@ -552,7 +552,7 @@ export async function positionInfo(
 
 export async function poolPrice(
   auraevmish: Auraevmish,
-  halotradeevmish: UniswapLPish,
+  halotradeevmish: HalotradeevmLPish,
   req: PoolPriceRequest
 ): Promise<PoolPriceResponse> {
   const startTimestamp: number = Date.now();
@@ -594,7 +594,7 @@ export async function poolPrice(
 
 export function getFullTokenFromSymbol(
   auraevmish: Auraevmish,
-  halotradeevmish: Halotradeevmish | UniswapLPish,
+  halotradeevmish: Halotradeevmish | HalotradeevmLPish,
   tokenSymbol: string
 ): Tokenish | Token {
   const tokenInfo: TokenInfo | undefined =

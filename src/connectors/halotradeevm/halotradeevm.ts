@@ -15,7 +15,7 @@ import {
   SwapQuoter,
   Trade as UniswapV3Trade,
   Route,
-  FACTORY_ADDRESS,
+  // FACTORY_ADDRESS,
 } from '@uniswap/v3-sdk';
 import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json';
 import { abi as IUniswapV3FactoryABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json';
@@ -433,7 +433,7 @@ export class Halotradeevm implements Halotradeevmish {
     feeTier: FeeAmount
   ): Promise<Pool | null> {
     const uniswapFactory = new Contract(
-      FACTORY_ADDRESS,
+      '0xa51DDB350e768052B7e44e1087D08fe2DD32b1df', // FACTORY_ADDRESS
       IUniswapV3FactoryABI,
       this.chain.provider
     );
@@ -476,20 +476,28 @@ export class Halotradeevm implements Halotradeevmish {
     amount: CurrencyAmount<Token>,
     tradeType: TradeType
   ) {
+    // console.log('Swap Route: ', swapRoute);
+    // console.log('Quote Token: ', quoteToken);
+    // console.log('Amount: ', amount);
+    // console.log('Trade Type: ', tradeType);
     const { calldata } = await SwapQuoter.quoteCallParameters(
       swapRoute,
       amount,
       tradeType,
       { useQuoterV2: true }
     );
+    // console.log('Call Dataaaaa: ', calldata);
+    // console.log('Quoter Contract Address: ', this._quoterContractAddress);
     const quoteCallReturnData = await this.chain.provider.call({
       to: this._quoterContractAddress,
       data: calldata,
     });
+    // console.log('Quote Call Return Dataaaa: ', quoteCallReturnData);
     const quoteTokenRawAmount = utils.defaultAbiCoder.decode(
       ['uint256'],
       quoteCallReturnData
     );
+    console.log('Quote Token Raw Amountttt: ', quoteTokenRawAmount);
     const qouteTokenAmount = CurrencyAmount.fromRawAmount(
       quoteToken,
       quoteTokenRawAmount.toString()
