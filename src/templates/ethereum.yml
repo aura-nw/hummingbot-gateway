@@ -17,7 +17,7 @@ networks:
     nodeURL: https://rpc.ankr.com/eth
     tokenListType: FILE
     nativeCurrencySymbol: ETH
-    tokenListSource: /home/gateway/conf/lists/ethereum_coingecko_20230610.json
+    tokenListSource: /home/haitran/Github/AURANetwork/hummingbot-gateway/src/templates/lists/arbitrum_coingecko_20230610.json
     gasPriceRefreshInterval: 60
   optimism:
     chainID: 10

@@ -24,16 +24,26 @@ import {
   PerpBalanceRequest,
   PerpBalanceResponse,
 } from './amm.requests';
+// import {
+//   price as uniswapPrice,
+//   trade as uniswapTrade,
+//   addLiquidity as uniswapV3AddLiquidity,
+//   removeLiquidity as uniswapV3RemoveLiquidity,
+//   collectEarnedFees as uniswapV3CollectEarnedFees,
+//   positionInfo as uniswapV3PositionInfo,
+//   poolPrice as uniswapV3PoolPrice,
+//   estimateGas as uniswapEstimateGas,
+// } from '../connectors/uniswap/uniswap.controllers';
 import {
-  price as uniswapPrice,
-  trade as uniswapTrade,
-  addLiquidity as uniswapV3AddLiquidity,
-  removeLiquidity as uniswapV3RemoveLiquidity,
-  collectEarnedFees as uniswapV3CollectEarnedFees,
-  positionInfo as uniswapV3PositionInfo,
-  poolPrice as uniswapV3PoolPrice,
-  estimateGas as uniswapEstimateGas,
-} from '../connectors/uniswap/uniswap.controllers';
+  price as halotradeevmPrice,
+  trade as halotradeevmTrade,
+  addLiquidity as halotradeevmV3AddLiquidity,
+  removeLiquidity as halotradeevmV3RemoveLiquidity,
+  collectEarnedFees as halotradeevmV3CollectEarnedFees,
+  positionInfo as halotradeevmV3PositionInfo,
+  poolPrice as halotradeevmV3PoolPrice,
+  estimateGas as halotradeevmEstimateGas,
+} from '../connectors/halotradeevm/halotradeevm.controllers';
 import {
   price as refPrice,
   trade as refTrade,
@@ -69,13 +79,16 @@ import {
 } from '../services/connection-manager';
 import {
   Chain as Ethereumish,
+  Auraevmish,
   Nearish,
   NetworkSelectionRequest,
   Perpish,
   RefAMMish,
   Tezosish,
   Uniswapish,
+  Halotradeevmish,
   UniswapLPish,
+  // HalotradeevmLPish,
 } from '../services/common-interfaces';
 import { Algorand } from '../chains/algorand/algorand';
 import { Tinyman } from '../connectors/tinyman/tinyman';
@@ -85,20 +98,24 @@ import { Aura } from '../chains/aura/aura';
 
 export async function price(req: PriceRequest): Promise<PriceResponse> {
   const chain = await getInitializedChain<
-    Algorand | Ethereumish | Nearish | Tezosish
+    Algorand | Ethereumish | Auraevmish | Nearish | Tezosish
   >(req.chain, req.network);
-  const connector: Uniswapish | RefAMMish | Tinyman | Plenty | Halotrade =
-    await getConnector<Uniswapish | RefAMMish | Tinyman | Plenty | Halotrade>(
-      req.chain,
-      req.network,
-      req.connector
-    );
+  const connector:
+    | Uniswapish
+    | Halotradeevmish
+    | RefAMMish
+    | Tinyman
+    | Plenty
+    | Halotrade = await getConnector<
+    Uniswapish | Halotradeevmish | RefAMMish | Tinyman | Plenty | Halotrade
+  >(req.chain, req.network, req.connector);
 
   if (connector instanceof Plenty) {
     return plentyPrice(<Tezosish>chain, connector, req);
   } else if ('routerAbi' in connector) {
+    // change to Uniswap when enable it just workaround method for now: TBD
     // we currently use the presence of routerAbi to distinguish Uniswapish from RefAMMish
-    return uniswapPrice(<Ethereumish>chain, connector, req);
+    return halotradeevmPrice(<Auraevmish>chain, connector, req);
   } else if (connector instanceof Tinyman) {
     return tinymanPrice(chain as unknown as Algorand, connector, req);
   } else if (connector instanceof Halotrade) {
@@ -110,20 +127,19 @@ export async function price(req: PriceRequest): Promise<PriceResponse> {
 
 export async function trade(req: TradeRequest): Promise<TradeResponse> {
   const chain = await getInitializedChain<
-    Algorand | Ethereumish | Nearish | Tezosish
+    Algorand | Ethereumish | Auraevmish | Nearish | Tezosish
   >(req.chain, req.network);
-  const connector: Uniswapish | RefAMMish | Tinyman | Plenty =
-    await getConnector<Uniswapish | RefAMMish | Tinyman | Plenty>(
-      req.chain,
-      req.network,
-      req.connector
-    );
+  const connector: Uniswapish | Halotradeevmish | RefAMMish | Tinyman | Plenty =
+    await getConnector<
+      Uniswapish | Halotradeevmish | RefAMMish | Tinyman | Plenty
+    >(req.chain, req.network, req.connector);
 
   if (connector instanceof Plenty) {
     return plentyTrade(<Tezosish>chain, connector, req);
   } else if ('routerAbi' in connector) {
+    // change to Uniswap when enable it just workaround method for now: TBD
     // we currently use the presence of routerAbi to distinguish Uniswapish from RefAMMish
-    return uniswapTrade(<Ethereumish>chain, connector, req);
+    return halotradeevmTrade(<Auraevmish>chain, connector, req);
   } else if (connector instanceof Tinyman) {
     return tinymanTrade(chain as unknown as Algorand, connector, req);
   } else if (connector instanceof Halotrade) {
@@ -136,70 +152,70 @@ export async function trade(req: TradeRequest): Promise<TradeResponse> {
 export async function addLiquidity(
   req: AddLiquidityRequest
 ): Promise<AddLiquidityResponse> {
-  const chain = await getInitializedChain<Ethereumish>(req.chain, req.network);
+  const chain = await getInitializedChain<Auraevmish>(req.chain, req.network);
   const connector: UniswapLPish = await getConnector<UniswapLPish>(
     req.chain,
     req.network,
     req.connector
   );
 
-  return uniswapV3AddLiquidity(chain, connector, req);
+  return halotradeevmV3AddLiquidity(chain, connector, req);
 }
 
 export async function reduceLiquidity(
   req: RemoveLiquidityRequest
 ): Promise<RemoveLiquidityResponse> {
-  const chain = await getInitializedChain<Ethereumish>(req.chain, req.network);
+  const chain = await getInitializedChain<Auraevmish>(req.chain, req.network);
   const connector: UniswapLPish = await getConnector<UniswapLPish>(
     req.chain,
     req.network,
     req.connector
   );
 
-  return uniswapV3RemoveLiquidity(chain, connector, req);
+  return halotradeevmV3RemoveLiquidity(chain, connector, req);
 }
 
 export async function collectFees(
   req: CollectEarnedFeesRequest
 ): Promise<RemoveLiquidityResponse> {
-  const chain = await getInitializedChain<Ethereumish>(req.chain, req.network);
+  const chain = await getInitializedChain<Auraevmish>(req.chain, req.network);
   const connector: UniswapLPish = await getConnector<UniswapLPish>(
     req.chain,
     req.network,
     req.connector
   );
-  return uniswapV3CollectEarnedFees(chain, connector, req);
+  return halotradeevmV3CollectEarnedFees(chain, connector, req);
 }
 
 export async function positionInfo(
   req: PositionRequest
 ): Promise<PositionResponse> {
-  const chain = await getInitializedChain<Ethereumish>(req.chain, req.network);
+  const chain = await getInitializedChain<Auraevmish>(req.chain, req.network);
   const connector: UniswapLPish = await getConnector<UniswapLPish>(
     req.chain,
     req.network,
     req.connector
   );
-  return uniswapV3PositionInfo(chain, connector, req);
+  return halotradeevmV3PositionInfo(chain, connector, req);
 }
 
 export async function poolPrice(
   req: PoolPriceRequest
 ): Promise<PoolPriceResponse> {
-  const chain = await getInitializedChain<Ethereumish>(req.chain, req.network);
+  const chain = await getInitializedChain<Auraevmish>(req.chain, req.network);
   const connector: UniswapLPish = await getConnector<UniswapLPish>(
     req.chain,
     req.network,
     req.connector
   );
-  return uniswapV3PoolPrice(chain, connector, req);
+  return halotradeevmV3PoolPrice(chain, connector, req);
 }
 
 export async function estimateGas(
   req: NetworkSelectionRequest
 ): Promise<EstimateGasResponse> {
   const chain = await getInitializedChain<
-    Algorand | Ethereumish | Nearish | Tezosish
+    Algorand | Auraevmish | Nearish | Tezosish
   >(req.chain, req.network);
   const connector: Uniswapish | RefAMMish | Tinyman | Plenty =
     await getConnector<Uniswapish | RefAMMish | Plenty>(
@@ -212,7 +228,7 @@ export async function estimateGas(
     return plentyEstimateGas(<Tezosish>chain, connector);
   } else if ('routerAbi' in connector) {
     // we currently use the presence of routerAbi to distinguish Uniswapish from RefAMMish
-    return uniswapEstimateGas(<Ethereumish>chain, connector);
+    return halotradeevmEstimateGas(<Auraevmish>chain, connector);
   } else if (connector instanceof Tinyman) {
     return tinymanEstimateGas(chain as unknown as Algorand, connector);
   } else {

@@ -1,0 +1,33 @@
+# how much the execution price is allowed to move unfavorably from the trade
+# execution price. It uses a rational number for precision.
+allowedSlippage: '2/100'
+
+# the maximum gas used to estimate gasCost for a halotrade trade.
+gasLimitEstimate: 150688
+
+# how long a trade is valid in seconds. After time passes halotrade will not
+# perform the trade, but the gas will still be sent.
+ttl: 600
+
+# For each swap, the maximum number of hops to consider.
+# Note: More hops will increase latency of the algorithm.
+maximumHops: 4
+
+# Use halotrade Router or Quoter to quote prices.
+# true - use Smart Order Router
+# false - use QuoterV2 Contract
+useRouter: false
+
+# Fee tier to use for the halotrade Quoter.
+# Required if `useRouter` is false.
+# Available options: 'LOWEST', 'LOW', 'MEDIUM', 'HIGH'.
+feeTier: 'MEDIUM'
+
+contractAddresses:
+  mainnet:
+    # halotradeevmV3SmartOrderRouterAddress: '0x7B260583139dCA51DE0430Fd4CAf6D4627bF3911'
+    # halotradeevmV3SmartOrderRouterAddress: '0x728f272ba72BaB7757D1d12054770edfF6c8d1AE'
+    halotradeevmV3SmartOrderRouterAddress: '0x38e728437fE36EA09c631d78c455506A20c24015'
+    halotradeevmV3NftManagerAddress: '0x809AE1da5388e762A7DB05D9E0D7Ae9462bD8f26'
+    # halotradeevmV3QuoterV2ContractAddress: '0x3e4aFdAd24929e4e0Eb2379FC1AF97b1D0AdDae8'
+    halotradeevmV3QuoterV2ContractAddress: '0x04105da026ddf684249d4003d3b8980b28c94911'

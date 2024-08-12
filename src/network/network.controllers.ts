@@ -2,6 +2,7 @@ import { StatusRequest, StatusResponse } from './network.requests';
 import { Avalanche } from '../chains/avalanche/avalanche';
 import { BinanceSmartChain } from '../chains/binance-smart-chain/binance-smart-chain';
 import { Ethereum } from '../chains/ethereum/ethereum';
+import { Auraevm } from '../chains/auraevm/auraevm';
 import { Harmony } from '../chains/harmony/harmony';
 import { Polygon } from '../chains/polygon/polygon';
 import { Injective } from '../chains/injective/injective';
@@ -67,6 +68,11 @@ export async function getStatus(
     const ethereumConnections = Ethereum.getConnectedInstances();
     connections = connections.concat(
       ethereumConnections ? Object.values(ethereumConnections) : []
+    );
+
+    const auraevmConnections = Auraevm.getConnectedInstances();
+    connections = connections.concat(
+      auraevmConnections ? Object.values(auraevmConnections) : []
     );
 
     const polygonConnections = Polygon.getConnectedInstances();

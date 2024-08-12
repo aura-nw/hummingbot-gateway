@@ -1,0 +1,12 @@
+networks:
+  mainnet:
+    chainID: 1 # 1 # 6322
+    nodeURL: https://jsonrpc.aura.network
+    tokenListType: FILE
+    nativeCurrencySymbol: AURA
+    tokenListSource: /home/haitran/Github/AURANetwork/hummingbot-gateway/conf/lists/auraevm_mainnet_tokens.json
+    gasPriceRefreshInterval: 60
+
+# if you use the gas assumptions below, your wallet needs >0.1 ETH balance for gas
+gasLimitTransaction: 1000000
+manualGasPrice: 33

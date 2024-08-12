@@ -6,7 +6,7 @@ import {
 } from '../../amm/amm.requests';
 import { Aura } from '../../chains/aura/aura';
 import { latency } from '../../services/base';
-// import { Auraish, Halotradish } from '../../services/common-interfaces';
+// import { Auraish, Halotradeish } from '../../services/common-interfaces';
 import {
   HttpException,
   PRICE_FAILED_ERROR_CODE,

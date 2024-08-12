@@ -2,13 +2,13 @@ networks:
   xstaxy:
     nodeURL: https://rpc.aura.network
     tokenListType: FILE
-    tokenListSource: /home/tuan1998/hummingbot-gateway/conf/lists/aura_xstaxy.json
+    tokenListSource: /home/haitran/Github/AURANetwork/hummingbot-gateway/conf/lists/aura_xstaxy.json
     routerAddress: aura10lfagekpspw59za99x98tuxfsegx3v5sxycntqnfd4vj7e6xzq0skguqty
-    defaultGasPrice: 0.00001uaura
+    defaultGasPrice: 0.003uaura
   euphoria:
     nodeURL: https://rpc.euphoria.aura.network
     tokenListType: FILE
-    tokenListSource: /home/tuan1998/hummingbot-gateway/conf/lists/aura_euphoria.json
+    tokenListSource: /home/haitran/Github/AURANetwork/hummingbot-gateway/conf/lists/aura_euphoria.json
     routerAddress: aura1qa6ulm3jzlm9kzln63rmkn50xm7xmchkddvmkaj7cg0lk63tprsqalwtcj
     defaultGasPrice: 1ueaura
 network: xstaxy

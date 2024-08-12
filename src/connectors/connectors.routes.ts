@@ -22,6 +22,7 @@ import { TinymanConfig } from './tinyman/tinyman.config';
 import { PlentyConfig } from './plenty/plenty.config';
 import { KujiraConfig } from './kujira/kujira.config';
 import { HalotradeConfig } from './halotrade/halotrade.config';
+import { HalotradeevmConfig } from './halotradeevm/halotradeevm.config';
 
 export namespace ConnectorsRoutes {
   export const router = Router();
@@ -175,6 +176,21 @@ export namespace ConnectorsRoutes {
             trading_type: HalotradeConfig.config.tradingTypes,
             chain_type: HalotradeConfig.config.chainType,
             available_networks: HalotradeConfig.config.availableNetworks,
+          },
+          {
+            name: 'halotradeevm',
+            trading_type: HalotradeevmConfig.config.tradingTypes('swap'),
+            chain_type: HalotradeevmConfig.config.chainType,
+            available_networks: HalotradeevmConfig.config.availableNetworks,
+          },
+          {
+            name: 'halotradeevmLP',
+            trading_type: HalotradeevmConfig.config.tradingTypes('LP'),
+            chain_type: HalotradeevmConfig.config.chainType,
+            available_networks: JSON.parse(
+              JSON.stringify(HalotradeevmConfig.config.availableNetworks)
+            ),
+            additional_spenders: ['halotradeevm'],
           },
         ],
       });
