@@ -8,5 +8,5 @@ networks:
     gasPriceRefreshInterval: 60
 
 # if you use the gas assumptions below, your wallet needs >0.1 ETH balance for gas
-gasLimitTransaction: 3000000
-manualGasPrice: 110
+gasLimitTransaction: 1000000
+manualGasPrice: 33
