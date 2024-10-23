@@ -95,6 +95,8 @@ const patchTrade = (_key: string, error?: Error) => {
         trade: new Trade({
           v2Routes: [
             {
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
               routev2: DAI_TO_WETH,
               inputAmount: CurrencyAmount.fromRawAmount(
                 DAI,
