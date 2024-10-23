@@ -139,3 +139,11 @@ configurations:
   $namespace telos:
     configurationPath: telos.yml
     schemaPath: ethereum-schema.json
+
+  $namespace story:
+    configurationPath: story.yml
+    schemaPath: ethereum-schema.json
+  
+  $namespace piperxswap:
+    configurationPath: piperxswap.yml
+    schemaPath: piperxswap-schema.json

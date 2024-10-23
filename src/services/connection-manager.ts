@@ -47,6 +47,8 @@ import { PancakeswapLP } from '../connectors/pancakeswap/pancakeswap.lp';
 import { XRPLCLOB } from '../connectors/xrpl/xrpl';
 import { Carbonamm } from '../connectors/carbon/carbonAMM';
 import { Balancer } from '../connectors/balancer/balancer';
+import { Story } from '../chains/story/story';
+import { Piperxswap } from '../connectors/piperxswap/piperxswap';
 
 export type ChainUnion =
   | Algorand
@@ -146,6 +148,8 @@ export async function getChainInstance(
     connection = Kujira.getInstance(network);
   } else if (chain === 'telos') {
     connection = Telos.getInstance(network);
+  } else if (chain === 'story') {
+    connection = Story.getInstance(network);
   } else {
     connection = undefined;
   }
@@ -163,7 +167,7 @@ export type ConnectorUnion =
   | Plenty
   | XRPLCLOB
   | Curve
-  | KujiraCLOB
+  | KujiraCLOB;
 
 export type Connector<T> = T extends Uniswapish
   ? Uniswapish
@@ -183,7 +187,7 @@ export type Connector<T> = T extends Uniswapish
                 ? XRPLCLOB
                 : T extends KujiraCLOB
                   ? KujiraCLOB
-                    : never;
+                  : never;
 
 export async function getConnector<T>(
   chain: string,
@@ -237,6 +241,8 @@ export async function getConnector<T>(
     connectorInstance = Tinyman.getInstance(network);
   } else if (connector === 'plenty') {
     connectorInstance = Plenty.getInstance(network);
+  } else if (connector === 'piperxswap') {
+    connectorInstance = Piperxswap.getInstance(chain, network);
   } else {
     throw new Error('unsupported chain or connector');
   }

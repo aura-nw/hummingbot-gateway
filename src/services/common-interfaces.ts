@@ -18,6 +18,7 @@ import { CosmosAsset, CosmosBase } from '../chains/cosmos/cosmos-base';
 import { Provider } from '@ethersproject/abstract-provider';
 import { CurrencyAmount, Token, Trade as TradeUniswap } from '@uniswap/sdk';
 import { Trade } from '@uniswap/router-sdk';
+import { Trade as UniswapV2Trade } from '@uniswap/v2-sdk';
 import { Trade as UniswapV3Trade } from '@uniswap/v3-sdk';
 import {
   TradeType,
@@ -144,6 +145,7 @@ export type UniswapishCurrency = MMFCurrency | VVSCurrency;
 export type UniswapishTrade =
   | Trade<Currency, Currency, TradeType>
   | TradePangolin
+  | UniswapV2Trade<Currency, UniswapCoreToken, TradeType>
   | UniswapV3Trade<Currency, UniswapCoreToken, TradeType>
   | TradeQuickswap
   | TradeTraderjoe
