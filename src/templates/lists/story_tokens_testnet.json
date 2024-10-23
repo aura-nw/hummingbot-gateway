@@ -1,0 +1,40 @@
+{
+  "name": "testnet",
+  "tokens": [
+    {
+      "symbol": "WETH",
+      "name": "WETH",
+      "chainId": 1513,
+      "address": "0x968B9a5603ddEb2A78Aa08182BC44Ece1D9E5bf0",
+      "decimals": 18
+    },
+    {
+      "symbol": "WBTC",
+      "name": "WBTC",
+      "chainId": 1513,
+      "address": "0x153B112138C6dE2CAD16D66B4B6448B7b88CAEF3",
+      "decimals": 8
+    },
+    {
+      "symbol": "SUSDC",
+      "name": "SUSDC",
+      "chainId": 1513,
+      "address": "0x700722D24f9256Be288f56449E8AB1D27C4a70ca",
+      "decimals": 6
+    },
+    {
+      "symbol": "SUSDT",
+      "name": "SUSDT",
+      "chainId": 1513,
+      "address": "0x8812d810EA7CC4e1c3FB45cef19D6a7ECBf2D85D",
+      "decimals": 6
+    },
+    {
+      "symbol": "WIP",
+      "name": "WIP",
+      "chainId": 1513,
+      "address": "0x6e990040Fd9b06F98eFb62A147201696941680b5",
+      "decimals": 18
+    }
+  ]
+}
